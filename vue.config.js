@@ -30,10 +30,10 @@ const assetsCDN = {
   css: [],
   // https://unpkg.com/browse/vue@2.6.10/
   js: [
-    '//cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js',
-    '//cdn.jsdelivr.net/npm/vue-router@3.1.3/dist/vue-router.min.js',
+    '//cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js',
+    '//cdn.jsdelivr.net/npm/vue-router@3.5.1/dist/vue-router.min.js',
     '//cdn.jsdelivr.net/npm/vuex@3.1.1/dist/vuex.min.js',
-    '//cdn.jsdelivr.net/npm/axios@0.19.0/dist/axios.min.js'
+    '//cdn.jsdelivr.net/npm/axios@0.21.1/dist/axios.min.js'
   ]
 }
 
@@ -54,9 +54,8 @@ const vueConfig = {
     externals: isProd ? assetsCDN.externals : {}
   },
 
-  chainWebpack: (config) => {
-    config.resolve.alias
-      .set('@$', resolve('src'))
+  chainWebpack: config => {
+    config.resolve.alias.set('@$', resolve('src'))
 
     const svgRule = config.module.rule('svg')
     svgRule.uses.clear()
@@ -115,14 +114,13 @@ const vueConfig = {
 
   // disable source map in production
   productionSourceMap: false,
-  lintOnSave: undefined,
+  lintOnSave: false,
   // babel-loader no-ignore node_modules/*
   transpileDependencies: []
 }
 
 // preview.pro.loacg.com only do not use in your production;
 if (process.env.VUE_APP_PREVIEW === 'true') {
-  console.log('VUE_APP_PREVIEW', true)
   // add `ThemeColorReplacer` plugin to webpack plugins
   vueConfig.configureWebpack.plugins.push(createThemeColorReplacerPlugin())
 }

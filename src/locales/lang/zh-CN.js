@@ -21,7 +21,7 @@ export default {
 
   'layouts.usermenu.dialog.title': '信息',
   'layouts.usermenu.dialog.content': '您确定要注销吗？',
-  'layouts.userLayout.title': 'Ant Design YYDS!',
+  'layouts.userLayout.title': '欢迎使用Cloud Leaf Admin 后台管理系统',
   ...components,
   ...global,
   ...menu,

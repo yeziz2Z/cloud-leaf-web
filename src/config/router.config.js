@@ -1,11 +1,11 @@
 // eslint-disable-next-line
-import { UserLayout, BasicLayout, BlankLayout } from '@/layouts'
+import { UserLayout, BasicLayout, BlankLayout, PageView, RouteView } from '@/layouts'
 import { bxAnaalyse } from '@/core/icons'
 
-const RouteView = {
+/* const RouteView = {
   name: 'RouteView',
   render: h => h('router-view')
-}
+} */
 
 export const asyncRouterMap = [
   {
@@ -267,14 +267,15 @@ export const asyncRouterMap = [
             ]
           }
         ]
-      }
+      },
 
       // other
-      /*
+
       {
         path: '/other',
         name: 'otherPage',
         component: PageView,
+        // component: RouteView,
         meta: { title: '其他组件', icon: 'slack', permission: [ 'dashboard' ] },
         redirect: '/other/icon-selector',
         children: [
@@ -314,12 +315,12 @@ export const asyncRouterMap = [
                 component: () => import('@/views/other/RoleList'),
                 meta: { title: '角色列表', keepAlive: true }
               },
-              {
+              /* {
                 path: '/other/list/system-role',
                 name: 'SystemRole',
                 component: () => import('@/views/role/RoleList'),
                 meta: { title: '角色列表2', keepAlive: true }
-              },
+              }, */
               {
                 path: '/other/list/permission-list',
                 name: 'PermissionList',
@@ -330,7 +331,7 @@ export const asyncRouterMap = [
           }
         ]
       }
-      */
+
     ]
   },
   {

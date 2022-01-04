@@ -50,9 +50,9 @@ export default {
   mounted () {
     setTimeout(() => {
       this.currentUser = {
-        name: 'Caitlyn'
+        name: 'Serati Ma'
       }
-    }, 1000)
+    }, 1500)
   }
 }
 </script>

@@ -19,7 +19,7 @@ An out-of-box UI solution for enterprise applications as a Vue boilerplate. base
 - 文档: https://pro.antdv.com/docs/getting-started
 - 更新日志: https://pro.antdv.com/docs/changelog
 - 常见问题: https://pro.antdv.com/docs/faq
-
+- Vue3 ProLayout: https://github.com/vueComponent/pro-layout
 
 Overview
 ----
@@ -102,3 +102,9 @@ Modern browsers and IE10.
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png" alt="IE / Edge" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>IE / Edge | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Chrome | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png" alt="Safari" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Safari | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png" alt="Opera" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)</br>Opera |
 | --- | --- | --- | --- | --- |
 | IE10, Edge | last 2 versions | last 2 versions | last 2 versions | last 2 versions |
+
+
+## Contributors
+
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/vueComponent/ant-design-vue-pro/graphs/contributors"><img src="https://opencollective.com/ant-design-pro-vue/contributors.svg?width=890&button=false" /></a>
