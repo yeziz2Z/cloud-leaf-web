@@ -1,4 +1,5 @@
 <template>
+  <page-header-wrapper>
   <a-card :bordered="false">
     <div class="table-page-search-wrapper">
       <a-form layout="inline">
@@ -76,6 +77,7 @@
     <role-modal ref="modal" @ok="handleOk"></role-modal>
 
   </a-card>
+    </page-header-wrapper>
 </template>
 
 <script>

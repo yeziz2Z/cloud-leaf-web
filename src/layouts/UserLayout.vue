@@ -28,7 +28,7 @@
             <a href="_self">条款</a>
           </div>
           <div class="copyright">
-            Copyright &copy; 2018 vueComponent
+            Copyright &copy; 2022 Cloud Leaf Admin
           </div>
         </div>
       </div>

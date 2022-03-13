@@ -872,7 +872,7 @@ const userNav = options => {
         title: '角色列表',
         show: true
       },
-      path: '/other/RoleList',
+      // path: '/other/RoleList',
       component: 'RoleList'
     },
      {
