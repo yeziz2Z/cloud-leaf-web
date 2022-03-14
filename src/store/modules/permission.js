@@ -64,6 +64,7 @@ const permission = {
   },
   actions: {
     GenerateRoutes ({ commit }, data) {
+      console.log("async-route GenerateRoutes")
       return new Promise(resolve => {
         const { roles } = data
         const routerMap = cloneDeep(asyncRouterMap)

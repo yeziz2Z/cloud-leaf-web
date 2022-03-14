@@ -11,7 +11,7 @@ import {i18nRender} from '@/locales'
 NProgress.configure({showSpinner: false}) // NProgress Configuration
 
 const allowList = ['login', 'register', 'registerResult'] // no redirect allowList
-const loginRoutePath = '/auth/login'
+const loginRoutePath = '/user/login'
 const defaultRoutePath = '/dashboard/workplace'
 
 router.beforeEach((to, from, next) => {
@@ -24,13 +24,16 @@ router.beforeEach((to, from, next) => {
       next({path: defaultRoutePath})
       NProgress.done()
     } else {
+      console.log("1")
       // check login user.roles is null
       if (store.getters.roles.length === 0) {
+        console.log("2")
         // request login userInfo
         store
           .dispatch('GetInfo')
           .then(res => {
-            const roles = res.result && res.result.role
+            console.log("permission ",res)
+            const roles = res.data && res.data.roles
             // generate dynamic router
             store.dispatch('GenerateRoutes', {roles}).then(() => {
               // 根据roles权限生成可访问的路由表
@@ -52,7 +55,7 @@ router.beforeEach((to, from, next) => {
           })
           .catch(() => {
             notification.error({
-              message: '错误',
+              message: '错误11',
               description: '请求用户信息失败，请重试'
             })
             // 失败时，获取用户信息失败时，调用登出，来清空历史保留信息
@@ -69,7 +72,7 @@ router.beforeEach((to, from, next) => {
       // 在免登录名单，直接进入
       next()
     } else {
-      next({path: loginRoutePath, query: {redirect: to.fullPath}})
+      next({ path: loginRoutePath, query: { redirect: to.fullPath }})
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }
