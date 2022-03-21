@@ -62,6 +62,9 @@ export default {
       type: Boolean,
       default: false
     },
+    showTotal:{
+      type:Function
+    },
     showPagination: {
       type: String | Boolean,
       default: 'auto'

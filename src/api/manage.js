@@ -3,7 +3,7 @@ import request from '@/utils/request'
 const api = {
   user: '/user',
   role: '/role',
-  service: '/service',
+  service: '/user/service',
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
   orgTree: '/org/tree'

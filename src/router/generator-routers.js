@@ -122,12 +122,12 @@ export const generatorDynamicRouter = token => {
  */
 export const generator = (routerMap, parent) => {
   return routerMap.map(item => {
-    const { title, show, hideChildren, hiddenHeaderContent, target, icon } = item.meta || {}
+
     const currentRouter = {
       // 如果路由设置了 path，则作为默认 path，否则 路由地址 动态拼接生成如 /dashboard/workplace
       path: item.path || `${(parent && parent.path) || ''}/${item.key}`,
       // 路由名称，建议唯一
-      name: item.name || item.key || '',
+      name: item.key,
       // 该路由对应页面的 组件 :方案1
       // component: constantRouterComponents[item.component || item.key],
       // 该路由对应页面的 组件 :方案2 (动态加载)
@@ -135,22 +135,23 @@ export const generator = (routerMap, parent) => {
 
       // meta: 页面标题, 菜单图标, 页面权限(供指令权限用，可去掉)
       meta: {
-        title: title,
-        icon: icon || undefined,
-        hiddenHeaderContent: hiddenHeaderContent,
-        target: target,
-        permission: item.name
+        title: item.title || item.meta.title,
+        icon: item.icon ,
+        hiddenHeaderContent: item.hiddenHeaderContent,
+        target: item.newWindow ? item.path : undefined,
       }
     }
     // 是否设置了隐藏菜单
-    if (show === false) {
+    /*if (show === false) {
       currentRouter.hidden = true
-    }
+    }*/
+    currentRouter.hidden = item.hidden
     // 是否设置了隐藏子菜单
-    if (hideChildren) {
-      currentRouter.hideChildrenInMenu = true
-    }
     // 为了防止出现后端返回结果不规范，处理有可能出现拼接出两个 反斜杠
+    /*if (hideChildren) {
+      currentRouter.hideChildrenInMenu = true
+    }*/
+    currentRouter.hideChildrenInMenu = item.hideChildrenInMenu
     if (!currentRouter.path.startsWith('http')) {
       currentRouter.path = currentRouter.path.replace('//', '/')
     }
@@ -177,7 +178,7 @@ const listToTree = (list, tree, parentId) => {
     if (item.parentId === parentId) {
       const child = {
         ...item,
-        key: item.key || item.name,
+        key: item.name,
         children: []
       }
       // 迭代 list， 找到当前菜单相符合的所有子菜单
