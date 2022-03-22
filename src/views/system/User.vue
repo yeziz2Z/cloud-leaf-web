@@ -16,7 +16,7 @@
               <a-row :gutter="48">
                 <a-col :md="8" :sm="24">
                   <a-form-item label="用户名">
-                    <a-input v-model="queryParam.id" placeholder=""/>
+                    <a-input v-model="queryParam.name" placeholder=""/>
                   </a-form-item>
                 </a-col>
                 <a-col :md="8" :sm="24">
@@ -26,7 +26,7 @@
                 </a-col>
                 <a-col :md="8" :sm="24">
                   <a-form-item label="状态">
-                    <a-select placeholder="请选择" default-value="0">
+                    <a-select v-model="queryParam.status" placeholder="请选择" default-value="0">
                       <a-select-option value="0">全部</a-select-option>
                       <a-select-option value="1">关闭</a-select-option>
                       <a-select-option value="2">运行中</a-select-option>
@@ -71,9 +71,10 @@
             ref="table"
             size="default"
             :columns="columns"
-            :data="loadData"
+            :data="getUserList"
             :alert="false"
-            :show-total="columns => 'test'"
+            :rowKey='record => record.id'
+            :showPagination='true'
             :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           >
             <!--          <span slot="action" slot-scope="text, record">
@@ -157,18 +158,17 @@ export default {
       columns: [
         {
           title: '登录账号',
-          dataIndex: 'no'
+          dataIndex: 'username'
         },
         {
           title: '用户姓名',
-          dataIndex: 'description'
+          dataIndex: 'nickName',
+          sorter: true,
+          needTotal: true,
         },
         {
           title: '部门',
-          dataIndex: 'callNo',
-          sorter: true,
-          needTotal: true,
-          customRender: (text) => text + ' 次'
+          dataIndex: 'organization.name',
         },
         {
           title: '状态',
@@ -177,7 +177,7 @@ export default {
         },
         {
           title: '手机号',
-          dataIndex: 'updatedAt',
+          dataIndex: 'mobilePhone',
           sorter: true
         },
         {
@@ -188,12 +188,13 @@ export default {
         }
       ],
       // 加载数据方法 必须为 Promise 对象
-      loadData: parameter => {
+      /*loadData: parameter => {
         return getServiceList(Object.assign(parameter, this.queryParam))
           .then(res => {
-            return res.result
+            return res.data
           })
-      },
+      },*/
+      // loadData: this.getUserList(),
       orgTree: [],
       selectedRowKeys: [],
       selectedRows: []
@@ -205,13 +206,23 @@ export default {
     })
   },
   methods: {
-    handleClick(e) {
-      console.log('handleClick', e)
-      this.queryParam = {
-        key: e.key
-      }
+    handleClick(key, e) {
+      console.log('handleClick', key, e)
+      this.queryParam.orgId = key.length ? key[0] : null
 
+      let page = this.$refs.table.localPagination
+      const parameter = {
+        current: page.current,
+        size: page.pageSize
+      }
+      this.getUserList(parameter)
       this.$refs.table.refresh(true)
+    },
+    getUserList(parameter) {
+      return getServiceList(Object.assign(parameter, this.queryParam))
+        .then(res => {
+          return res.data
+        })
     },
     handleEdit(record) {
       console.log(record);
