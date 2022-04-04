@@ -2,8 +2,8 @@ import axios from 'axios'
 import store from '@/store'
 import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
-import { VueAxios } from './axios'
-import { ACCESS_TOKEN } from '@/store/mutation-types'
+import {VueAxios} from './axios'
+import {ACCESS_TOKEN} from '@/store/mutation-types'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -31,9 +31,7 @@ const errorHandler = (error) => {
       })
       if (token) {
         store.dispatch('Logout').then(() => {
-          setTimeout(() => {
-            window.location.reload()
-          }, 1500)
+          window.location.reload()
         })
       }
     }
@@ -59,7 +57,7 @@ request.interceptors.response.use((response) => {
 
 const installer = {
   vm: {},
-  install (Vue) {
+  install(Vue) {
     Vue.use(VueAxios, request)
   }
 }

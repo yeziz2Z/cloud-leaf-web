@@ -191,6 +191,11 @@ export default {
             this.localPagination = false
           }
           this.localDataSource = r.records // 返回结果中的数组数据
+          // console.log("showTotal",this.showTotal());
+
+          /*if (this.showTotal){
+            this.localPagination.showTotal = (total) => `共 ${total} 条`
+          }*/
           this.localLoading = false
         })
       }

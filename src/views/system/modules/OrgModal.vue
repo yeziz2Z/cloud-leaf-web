@@ -77,7 +77,7 @@ export default {
           _this.confirmLoading = true
           // 模拟后端请求 2000 毫秒延迟
           new Promise((resolve) => {
-            setTimeout(() => resolve(), 2000)
+            setTimeout(() => resolve(), 1000)
           }).then(() => {
             // Do something
             _this.$message.success('保存成功')

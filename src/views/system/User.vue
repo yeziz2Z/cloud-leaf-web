@@ -38,8 +38,8 @@
                 <a-col :md="8" :sm="24">
                   <span class="table-page-search-submitButtons"
                         :style=" { float: 'right', overflow: 'hidden' }  ">
-                    <a-button type="primary" @click="$refs.table.refresh(true)">查询</a-button>
-                    <a-button style="margin-left: 8px" @click="() => this.queryParam = {}">重置</a-button>
+                    <a-button type="primary" icon="search" @click="refresh">查询</a-button>
+                    <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
 
                   </span>
                 </a-col>
@@ -49,23 +49,10 @@
 
           <div class="table-operator">
             <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
-            <a-dropdown v-action:edit v-if="selectedRowKeys.length > 0">
-              <a-menu slot="overlay">
-                <a-menu-item key="1">
-                  <a-icon type="delete"/>
-                  删除
-                </a-menu-item>
-                <!-- lock | unlock -->
-                <a-menu-item key="2">
-                  <a-icon type="lock"/>
-                  锁定
-                </a-menu-item>
-              </a-menu>
-              <a-button style="margin-left: 8px">
-                批量操作
-                <a-icon type="down"/>
-              </a-button>
-            </a-dropdown>
+            <a-button icon="edit" :disabled="ids.length !== 1" @click="handleEdit">修改</a-button>
+            <a-button icon="eye" :disabled="ids.length !== 1" @click="handleView">查看</a-button>
+            <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete">删除</a-button>
+
           </div>
           <s-table
             ref="table"
@@ -73,32 +60,26 @@
             :columns="columns"
             :data="getUserList"
             :alert="false"
-            :rowKey='record => record.id'
+            :pagination="{ showTotal: total => `共 ${total} 条` }"
             :showPagination='true'
-            :rowSelection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+            :rowKey='record => record.id'
+            :rowSelection="{ selectedRowKeys: ids, onChange: onSelectChange }"
           >
-            <!--          <span slot="action" slot-scope="text, record">
-                        <template v-if="$auth('table.update')">
-                          <a @click="handleEdit(record)">编辑</a>
-                          <a-divider type="vertical" />
-                        </template>
-                        <a-dropdown>
-                          <a class="ant-dropdown-link">
-                            更多 <a-icon type="down" />
-                          </a>
-                          <a-menu slot="overlay">
-                            <a-menu-item>
-                              <a href="javascript:;">详情</a>
-                            </a-menu-item>
-                            <a-menu-item v-if="$auth('table.disable')">
-                              <a href="javascript:;">禁用</a>
-                            </a-menu-item>
-                            <a-menu-item v-if="$auth('table.delete')">
-                              <a href="javascript:;">删除</a>
-                            </a-menu-item>
-                          </a-menu>
-                        </a-dropdown>
-                      </span>-->
+
+            <span slot="roles" slot-scope="text,record">
+              <a-tag v-for="(role) in text " :color="colors[Math.floor(Math.random()*6)]" :key="role.id">{{ role.name }}</a-tag>
+            </span>
+            <span slot="status" slot-scope="text, record">
+              <a-popconfirm
+                ok-text="是"
+                cancel-text="否"
+                @confirm="confirmHandleStatus(record)"
+                @cancel="cancelHandleStatus(record)"
+              >
+                <span slot="title">确认<b>{{ record.status ? '停用' : '启用' }}</b>{{ record.nickName }}的用户吗?</span>
+                <a-switch checked-children="启用" un-checked-children="停用" :checked="record.status"/>
+              </a-popconfirm>
+            </span>
             <span slot="action" slot-scope="text, record">
             <template>
               <a @click="handleEdit(record)">编辑</a>
@@ -109,14 +90,12 @@
                 更多 <a-icon type="down"/>
               </a>
               <a-menu slot="overlay">
+
                 <a-menu-item>
-                  <a href="javascript:;">详情</a>
+                  <a href="javascript:;">重置密码</a>
                 </a-menu-item>
                 <a-menu-item>
-                  <a href="javascript:;">禁用</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a href="javascript:;">删除</a>
+                  <a @click="handleDelete(record)">删除</a>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>
@@ -124,19 +103,17 @@
           </s-table>
         </a-card>
       </a-col>
-
-
     </a-row>
 
-    <org-modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
+    <user-modal :orgTree="orgTree" :roleOptions="roleOptions" ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
   </a-card>
 </template>
 
 <script>
-// import MTree from '@/components/Tree/Tree'
 import {STable} from '@/components'
-import OrgModal from './modules/OrgModal'
-import {getOrgTree, getServiceList} from '@/api/manage'
+import UserModal from './modules/UserModal'
+import {getOrgTree, getServiceList, getRoles} from '@/api/manage'
+import {remove} from '@/api/system/user'
 import {Tree} from 'ant-design-vue'
 
 export default {
@@ -144,16 +121,13 @@ export default {
   components: {
     STable,
     // MTree,
-
-    OrgModal,
+    UserModal,
     ATree: Tree
   },
   data() {
     return {
       // 查询参数
       queryParam: {},
-      // 高级搜索 展开/关闭
-      advanced: false,
       // 表头
       columns: [
         {
@@ -167,13 +141,18 @@ export default {
           needTotal: true,
         },
         {
+          title: '角色',
+          dataIndex: 'roles',
+          scopedSlots: {customRender: 'roles' }
+        },
+        {
           title: '部门',
           dataIndex: 'organization.name',
         },
         {
           title: '状态',
           dataIndex: 'status',
-          needTotal: true
+          scopedSlots: {customRender: 'status'}
         },
         {
           title: '手机号',
@@ -187,50 +166,98 @@ export default {
           scopedSlots: {customRender: 'action'}
         }
       ],
-      // 加载数据方法 必须为 Promise 对象
-      /*loadData: parameter => {
-        return getServiceList(Object.assign(parameter, this.queryParam))
-          .then(res => {
-            return res.data
-          })
-      },*/
-      // loadData: this.getUserList(),
       orgTree: [],
-      selectedRowKeys: [],
-      selectedRows: []
+      roleOptions: [],
+      ids: [],
+      selectedRows: [],
+      colors : ['pink','red','orange','green','cyan','blue','purple']
     }
   },
   created() {
     getOrgTree().then(res => {
       this.orgTree = res.data
     })
+    getRoles().then(res => {
+      console.log("roles", res)
+      this.roleOptions = res.data.map((role, idx) => {
+        return {label: role.name, value: role.id}
+      })
+      console.log("roles", this.roleOptions)
+    })
   },
   methods: {
     handleClick(key, e) {
-      console.log('handleClick', key, e)
+      console.log(e)
       this.queryParam.orgId = key.length ? key[0] : null
-
-      let page = this.$refs.table.localPagination
-      const parameter = {
-        current: page.current,
-        size: page.pageSize
-      }
-      this.getUserList(parameter)
+      this.refresh()
+    },
+    refresh() {
       this.$refs.table.refresh(true)
     },
+    resetPassword(){
+
+    },
+
     getUserList(parameter) {
+      if (!parameter) {
+        let page = this.$refs.table.localPagination
+        parameter = {
+          current: page.current,
+          size: page.pageSize
+        }
+      }
       return getServiceList(Object.assign(parameter, this.queryParam))
         .then(res => {
           return res.data
         })
     },
-    handleEdit(record) {
-      console.log(record);
+    confirmHandleStatus(row) {
+
+    },
+    cancelHandleStatus(row) {
+
     },
     handleAdd(item) {
       console.log('add button, item', item)
-      this.$message.info(`提示：你点了 ${item.key} - ${item.title} `)
       this.$refs.modal.add(item.key)
+    },
+    handleEdit(record) {
+      this.$refs.modal.edit(record.id || this.ids[0])
+    },
+    handleView(record) {
+      this.$refs.modal.view(record.id || this.ids[0])
+    },
+    handleDelete(record) {
+      const userIds = record.id || this.ids
+      const _this = this
+      this.$confirm({
+        title: '确认删除所选中数据?',
+        content: '当前选中编号为' + userIds + '的数据',
+        onOk () {
+          return remove(userIds)
+            .then(resp => {
+              if (resp.code === 200) {
+                _this.$message.success('删除成功',3)
+                _this.refresh()
+              } else {
+                _this.$message.error(resp.msg)
+              }
+
+            })
+        },
+        onCancel () {}
+      })
+
+      /*remove(userIds).then(resp => {
+        if (resp.code === 200) {
+          this.$message.success('删除成功')
+          this.refresh()
+        } else {
+          this.$message.error(resp.msg)
+        }
+      }).catch(err => {
+        this.$message.error(err)
+      })*/
     },
     handleTitleClick(item) {
       console.log('handleTitleClick', item)
@@ -239,17 +266,17 @@ export default {
       console.log('titleClick', e)
     },
     handleSaveOk() {
+      this.ids = []
+      this.refresh()
+    },
+    handleSaveClose(e) {
+      console.log("handleSaveClose", e)
+    },
 
-    },
-    handleSaveClose() {
-
-    },
-    toggleAdvanced() {
-      this.advanced = !this.advanced
-    },
-    onSelectChange(selectedRowKeys, selectedRows) {
-      this.selectedRowKeys = selectedRowKeys
+    onSelectChange(ids, selectedRows) {
+      this.ids = ids
       this.selectedRows = selectedRows
+      console.log(this.ids)
     }
   }
 }
