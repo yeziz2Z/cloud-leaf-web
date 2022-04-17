@@ -55,7 +55,8 @@ import Dialog from '@/components/Dialog'
 import MultiTab from '@/components/MultiTab'
 import PageLoading from '@/components/PageLoading'
 import PermissionHelper from '@/core/permission/permission'
-import './directives/action'
+// import './directives/action'
+import './directives/permission'
 
 Vue.use(ConfigProvider)
 Vue.use(Layout)

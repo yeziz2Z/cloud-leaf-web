@@ -21,7 +21,7 @@
             <a-col :md="8" :sm="24">
                   <span class="table-page-search-submitButtons"
                         :style=" { float: 'right', overflow: 'hidden' }  ">
-                    <a-button type="primary" icon="search" @click="loadMenus">查询</a-button>
+                    <a-button type="primary" icon="search" @click="loadOrganizationTree">查询</a-button>
                     <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
                   </span>
             </a-col>
@@ -30,24 +30,23 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="primary" icon="plus"  @click="handleAdd">新建</a-button>
-        <!--        <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete">删除</a-button>-->
+        <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
       </div>
       <s-table
         ref="table"
         size="default"
+        :defaultExpandAllRows="true"
         :columns="columns"
-        :data-source="menus"
+        :data-source="organizations"
         :pagination="false"
         :row-key="record => record.id"
-
       >
 
             <span slot="icon" slot-scope="text,record">
               <a-icon v-if="text" :type="text"></a-icon>
             </span>
         <span slot="status" slot-scope="text, record">
-          <a-tag :color="text?'green':'red'">{{ text ? '正常' : '停用' }}</a-tag>
+          <a-tag :color="text=='1'?'green':'red'">{{ text == '1' ? '正常' : '停用' }}</a-tag>
         </span>
         <span slot="action" slot-scope="text, record">
             <template>
@@ -71,22 +70,21 @@
       </s-table>
     </a-card>
 
-    <menu-modal :menus="menuTree" ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
+    <organization-modal :organizations="organizations" ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
   </a-card>
 </template>
 
 <script>
-import MenuModal from './modules/MenuModal'
-import {getMenuTree, remove} from '@/api/system/menu'
-import {Tree, Table} from 'ant-design-vue'
+import OrganizationModal from './modules/OrganizationModal'
+import {Table} from 'ant-design-vue'
+import {getOrganizationTree,removeById} from "@/api/system/org";
 
 export default {
-  name: 'Menu',
+  name: 'Organization',
   components: {
     STable: Table,
     // MTree,
-    MenuModal,
-    ATree: Tree
+    OrganizationModal,
   },
   data() {
     return {
@@ -95,25 +93,13 @@ export default {
       // 表头
       columns: [
         {
-          title: '菜单名称',
-          dataIndex: 'title'
+          title: '机构名称',
+          dataIndex: 'name'
         },
-        {
-          title: '图标',
-          dataIndex: 'icon',
-          scopedSlots: {customRender: 'icon'}
-        },
+
         {
           title: '排序',
           dataIndex: 'orderNo',
-        },
-        {
-          title: '权限标识',
-          dataIndex: 'permission',
-        },
-        {
-          title: '组件',
-          dataIndex: 'component',
         },
         {
           title: '状态',
@@ -131,32 +117,26 @@ export default {
           scopedSlots: {customRender: 'action'}
         }
       ],
-      menus: [],
-      menuTree: [{label: '菜单', id: 0}],
-      ids: [],
-      selectedRows: [],
-      colors: ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple']
+      organizations: [],
     }
   },
   created() {
-    this.loadMenus()
-
+    this.loadOrganizationTree()
   },
   methods: {
-    loadMenus() {
-      getMenuTree(this.queryParam).then(resp => {
-        this.menus = resp.data
-        this.menuTree[0].children = this.menus
+    loadOrganizationTree() {
+      getOrganizationTree().then(resp => {
+        this.organizations = resp.data
       })
     },
     handleAdd(item) {
       this.$refs.modal.add(item.id)
     },
     handleEdit(record) {
-      this.$refs.modal.edit(record.id || this.ids[0])
+      this.$refs.modal.edit(record.id)
     },
     handleView(record) {
-      this.$refs.modal.view(record.id || this.ids[0])
+      this.$refs.modal.view(record.id)
     },
     handleDelete(record) {
       const id = record.id
@@ -165,11 +145,11 @@ export default {
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + record.id + '的数据',
         onOk() {
-          return remove(id)
+          return removeById(id)
             .then(resp => {
               if (resp.code === 200) {
                 _this.$message.success('删除成功', 3)
-                this.loadMenus()
+                _this.loadOrganizationTree()
               } else {
                 _this.$message.error(resp.msg)
               }
@@ -181,16 +161,11 @@ export default {
     },
 
     handleSaveOk() {
-      this.ids = []
-      this.loadMenus()
+      this.loadOrganizationTree()
     },
     handleSaveClose(e) {
     },
-    onSelectChange(ids, selectedRows) {
-      this.ids = ids
-      this.selectedRows = selectedRows
-      console.log(this.ids)
-    }
+
   }
 }
 </script>

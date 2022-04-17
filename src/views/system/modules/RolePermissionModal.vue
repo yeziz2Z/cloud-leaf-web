@@ -6,12 +6,14 @@
     @ok="submit"
   >
 
-    <a-card >
+    <a-card>
       <a-input-search style="margin-bottom: 8px" placeholder="搜索"/>
       <a-tree
-        v-model="roleMenus"
         :treeData="menuTree"
         :replaceFields="replaceFields"
+        @check="check"
+        ref="menu"
+        v-model="menuCheckedKeys"
         checkable/>
     </a-card>
   </a-modal>
@@ -38,7 +40,8 @@ export default {
       },
       title: '',
       roleId: null,
-      roleMenus: []
+      menuCheckedKeys: [],
+      menuHalfCheckedKeys: [],
     }
   },
   beforeCreate() {
@@ -51,43 +54,48 @@ export default {
     close() {
       this.visible = false
     },
+    check(checkedKeys, e) {
+      this.menuHalfCheckedKeys = e.halfCheckedKeys
+      console.log(this.menuCheckedKeys, this.menuHalfCheckedKeys)
+      console.log(this.menuTree);
+    },
     show(id, name) {
       this.title = name
       this.roleId = id
       //TODO 固定模态框 添加滚动条
       selectMenusByRoleId(id).then(resp => {
-        this.roleMenus = resp.data
+        this.menuCheckedKeys = resp.data
+        this.echoHalfCheckedKeys(this.menuTree)
         this.visible = true
       })
     },
     submit() {
-      saveRoleMenus({roleId: this.roleId, menuIds: this.roleMenus})
+      saveRoleMenus({roleId: this.roleId, menuIds: this.menuCheckedKeys.concat(this.menuHalfCheckedKeys)})
         .then(resp => {
-          if (resp.code === 200){
-            this.$message.success('赋权成功',3)
+          if (resp.code === 200) {
+            this.$message.success('赋权成功', 3)
             this.close()
-          }else {
-            this.$message.error(resp.msg,3)
+          } else {
+            this.$message.error(resp.msg, 3)
           }
         })
 
     },
-    /*onChange(e) {
-      /!*const value = e.target.value;
-      const expandedKeys = dataList
-        .map(item => {
-          if (item.title.indexOf(value) > -1) {
-            return getParentKey(item.key, gData);
+    // 半选回显
+    echoHalfCheckedKeys(nodes) {
+      if (!nodes || nodes.length === 0) {
+        return
+      }
+      nodes.forEach(node => {
+        if (node.children) {
+          const isExist = this.menuCheckedKeys.indexOf(node.id);
+          if (isExist !== -1){
+            this.menuCheckedKeys.splice(isExist, 1)
           }
-          return null;
-        })
-        .filter((item, i, self) => item && self.indexOf(item) === i);
-      Object.assign(this, {
-        expandedKeys,
-        searchValue: value,
-        autoExpandParent: true,
-      });*!/
-    },*/
+          this.echoHalfCheckedKeys(node.children)
+        }
+      })
+    }
   }
 }
 </script>

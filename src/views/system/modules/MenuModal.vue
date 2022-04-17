@@ -3,6 +3,7 @@
     :title="modalProp.title"
     :width="700"
     :visible="visible"
+    :dialog-style="{ top: '20px' }"
     :confirmLoading="confirmLoading"
     @ok="handleOk"
     @cancel="handleCancel"
@@ -10,115 +11,180 @@
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" disabled="true">
         <a-row>
-          <a-col span="12">
-            <a-form-item label="菜单标题" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input
-                v-decorator="['title',
-                {rules:[{required:true,message:'请输入用户昵称',whitespace:true}],
-                getValueFromEvent: e =>{ return e.target.value.trim()},
-                trigger:'blur',
-                validateTrigger:'blur'
-                }]"/>
-            </a-form-item>
-          </a-col>
-          <a-col span="12">
-            <a-form-item label="菜单编码" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input
-                v-decorator="menuForm.name"/>
+          <a-col span="24">
+            <a-form-item label="父级菜单"  :label-col="{span:3}" :wrapper-col="{span:21}">
+              <a-tree-select
+                :disabled="parentTreeDisabled"
+                v-decorator="menuForm.parentId"
+                style="width: 100%"
+                :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+                :tree-data="menus"
+                :replace-fields="{children:'children',title:'title',key:'id',value:'id'}"
+                placeholder="请选择父级菜单"
+              >
+              </a-tree-select>
             </a-form-item>
           </a-col>
         </a-row>
-        <a-row>
-          <a-col :span="12">
-            <a-form-item label="父级菜单" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input disabled v-decorator="menuForm.parentId"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="路由组件" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input v-decorator="menuForm.component"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="12">
-            <a-form-item label="菜单图标" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input v-decorator="menuForm.icon">
-                <a-icon slot="addonAfter" type="setting" />
-              </a-input>
-            </a-form-item>
-          </a-col>
 
-        </a-row>
-        <a-row >
-          <a-col :span="12">
-            <a-form-item label="重定向地址" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input v-decorator="menuForm.redirect"/>
-            </a-form-item>
-          </a-col>
+        <a-row>
           <a-col :span="12">
             <a-form-item label="排 序" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input-number style="width: 100%" v-decorator="menuForm.orderNo"/>
-            </a-form-item>
-          </a-col>
-
-        </a-row>
-        <a-row>
-          <a-col :span="12">
-            <a-form-item label="隐藏" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-switch v-decorator="menuForm.hidden"/>
+              <a-input-number style="width: 100%" :min="0" :max="9999" v-decorator="menuForm.orderNo"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item label="状 态" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+            <a-form-item :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+              <span slot="label">
+                状态&nbsp;
+                <a-tooltip title="关闭状态不会显示在侧边栏且无法访问">
+                  <a-icon type="question-circle-o"/>
+                </a-tooltip>
+              </span>
               <a-switch v-decorator="menuForm.status"/>
             </a-form-item>
-
           </a-col>
         </a-row>
         <a-row>
-          <a-col :span="12">
-            <a-form-item label="强制菜单显示" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-switch v-decorator="menuForm.hideChildrenInMenu"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
+          <a-col span="12">
             <a-form-item label="类 型" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
               <a-radio-group v-decorator="menuForm.type" :options="genderOptions">
               </a-radio-group>
             </a-form-item>
           </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="12">
-            <a-form-item label="图标" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-radio-group v-decorator="['gender', {initialValue:'0'}]" :options="genderOptions">
-              </a-radio-group>
+          <a-col :span="12" v-if="currentMenuType !== 'B'">
+            <a-form-item label="菜单图标" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+              <a-input v-decorator="menuForm.icon">
+                <a-icon slot="addonAfter" type="setting"/>
+              </a-input>
             </a-form-item>
           </a-col>
-          <a-col :span="12">
-            <a-form-item label="隐藏面包屑" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-switch v-decorator="menuForm.hiddenHeaderContent"/>
-            </a-form-item>
+        </a-row>
 
-          </a-col>
-        </a-row>
-        <a-row>
-          <a-col :span="12">
-            <a-form-item label="路由缓存" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-switch v-decorator="menuForm.keepAlive"/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="权限标识" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-input v-decorator="menuForm.permission"/>
-            </a-form-item>
-          </a-col>
-        </a-row>
+        <div v-if="currentMenuType === 'F'">
+          <a-row>
+            <a-col span="12">
+              <a-form-item label="菜单标题" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input
+                  v-decorator="menuForm.title"/>
+              </a-form-item>
+            </a-col>
+            <a-col span="12">
+              <a-form-item label="菜单编码" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input
+                  v-decorator="menuForm.name"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item label="重定向地址" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input v-decorator="menuForm.redirect"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item label="隐藏" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-switch v-decorator="menuForm.hidden"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item label="隐藏子菜单" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-switch v-decorator="menuForm.hideChildrenInMenu"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+              <span slot="label">
+                隐藏面包屑
+                <a-tooltip title="特殊 隐藏 PageHeader 组件中的页面带的 面包屑和页面标题栏">
+                  <a-icon type="question-circle-o"/>
+                </a-tooltip>
+              </span>
+                <a-switch v-decorator="menuForm.hiddenHeaderContent"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </div>
+
+        <div v-else-if="currentMenuType === 'M'">
+          <a-row>
+            <a-col span="12">
+              <a-form-item label="菜单标题" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input
+                  v-decorator="menuForm.title"/>
+              </a-form-item>
+            </a-col>
+            <a-col span="12">
+              <a-form-item label="菜单编码" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input
+                  v-decorator="menuForm.name"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item label="路由组件" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input v-decorator="menuForm.component"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item label="路由路径" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input v-decorator="menuForm.path"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item label="权限标识" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input v-decorator="menuForm.permission"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item label="隐藏" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-switch v-decorator="menuForm.hidden"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+          <a-row>
+            <a-col :span="12">
+              <a-form-item :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+              <span slot="label">
+                路由缓存
+                <a-tooltip title="开启后页面不显示面包屑">
+                  <a-icon type="question-circle-o"/>
+                </a-tooltip>
+              </span>
+                <a-switch v-decorator="menuForm.keepAlive"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item label="新窗口" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-switch v-decorator="menuForm.newWindow"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </div>
+        <div v-else>
+          <a-row>
+            <a-col span="12">
+              <a-form-item label="菜单标题" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input
+                  v-decorator="menuForm.title"/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="12">
+              <a-form-item label="权限标识" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
+                <a-input v-decorator="menuForm.permission"/>
+              </a-form-item>
+            </a-col>
+          </a-row>
+        </div>
 
         <a-row>
           <a-col :span="24">
-            <a-form-item label="备 注" :label-col="{span:3}" :wrapper-col="{span:20}">
+            <a-form-item label="备 注" :label-col="{span:3}" :wrapper-col="{span:21}">
               <a-textarea v-decorator="menuForm.remark"/>
             </a-form-item>
           </a-col>
@@ -127,7 +193,7 @@
       </a-form>
 
     </a-spin>
-    <template #footer v-show="modalProp.footVisible">
+    <template #footer>
       <a-button key="back" icon="close-circle" @click="handleCancel">取消</a-button>
       <a-button key="submit" :icon="modalProp.btnIcon" type="primary" @click="handleOk">提交</a-button>
     </template>
@@ -136,32 +202,37 @@
 
 <script>
 import {TreeSelect} from 'ant-design-vue'
-import {add, edit, getUserById} from '@/api/system/user'
+import IconSelector from '@/components/IconSelector'
+import {add, edit, getMenuById} from '@/api/system/menu'
+import pick from 'lodash.pick'
 
 const icons = ['plus-circle', 'check-circle'];
 const titles = ['新增', '编辑', '查看'];
 
 export default {
   name: 'MenuModal',
-  props: ['orgTree', 'roleOptions'],
+  props: ['menus'],
   components: {
-    ATreeSelect: TreeSelect
+    ATreeSelect: TreeSelect,
+    IconSelector
   },
   data() {
     return {
       visible: false,
       confirmLoading: false,
-      mdl: {},
+      formData: {},
+      iconSelectVisible: false,
       modalProp: {
         title: '',
-        btnIcon: '',
-        footVisible: true
+        btnIcon: ''
       },
-      genderOptions: [{label: '男', value: '0'}, {label: '女', value: '1'}, {label: '未知', value: '2'}],
+      currentMenuType: 'F',
+      genderOptions: [{label: '目录', value: 'F'}, {label: '菜单', value: 'M'}, {label: '按钮', value: 'B'}],
       id: null,
+      parentTreeDisabled: false,
       layout: {
-        labelCol: {span: 7},
-        wrapperCol: {span: 15}
+        labelCol: {span: 6},
+        wrapperCol: {span: 18}
       },
       menuForm: {
         title: ['title',
@@ -188,7 +259,6 @@ export default {
           }],
         component: ['component',
           {
-            rules: [{required: true, message: '请输入路由组件', whitespace: true}],
             getValueFromEvent: e => {
               return e.target.value.trim()
             },
@@ -201,14 +271,16 @@ export default {
               return e.target.value.trim()
             },
           }],
-        orderNo: ['orderNo',
+        path: ['path',
           {
-            rules: [{required: true, message: '请输入菜单排序'}],
             getValueFromEvent: e => {
               return e.target.value.trim()
             },
-            trigger: 'blur',
-            validateTrigger: 'blur'
+          }],
+        orderNo: ['orderNo',
+          {
+            rules: [{required: true, message: '请输入菜单排序'},
+            ],
           }],
         icon: ['icon', {}],
         permission: ['permission',
@@ -217,13 +289,20 @@ export default {
               return e.target.value.trim()
             },
           }],
-        hidden: ['hidden', {valuePropName:'checked'}],
-        status: ['status', {valuePropName:'checked'}],
-        hideChildrenInMenu: ['hideChildrenInMenu', {valuePropName:'checked'}],
-        type: ['type', {}],
-        keepAlive: ['keepAlive', {}],
-        hiddenHeaderContent: ['hiddenHeaderContent', {valuePropName:'checked'}],
-        newWindow: ['newWindow', {valuePropName:'checked'}],
+        hidden: ['hidden', {valuePropName: 'checked', initialValue: false}],
+        status: ['status', {valuePropName: 'checked', initialValue: true}],
+        hideChildrenInMenu: ['hideChildrenInMenu', {valuePropName: 'checked', initialValue: false}],
+        type: ['type', {
+          initialValue: 'F',
+          getValueFromEvent: e => {
+            let val = e.target.value
+            this.currentMenuType = val
+            return val
+          }
+        }],
+        keepAlive: ['keepAlive', {valuePropName: 'checked', initialValue: true}],
+        hiddenHeaderContent: ['hiddenHeaderContent', {valuePropName: 'checked', initialValue: false}],
+        newWindow: ['newWindow', {valuePropName: 'checked', initialValue: false}],
         remark: ['remark',
           {
             rules: [{max: 100, message: '长度限制100'}],
@@ -236,50 +315,48 @@ export default {
       }
     }
   },
+  computed: {},
   beforeCreate() {
     this.form = this.$form.createForm(this)
-    this.form.getFieldDecorator('keys', {})
   },
   created() {
-    console.log('roles::', this.roles)
   },
   methods: {
-    add() {
+    add(parentId) {
+      if (parentId) {
+        this.$nextTick(() => {
+          setTimeout(() => {
+            this.parentTreeDisabled = true;
+            this.form.setFieldsValue({parentId: parentId})
+          }, 0)
+        })
+      }
+
       this.modalProp.title = titles[0]
       this.modalProp.btnIcon = icons[0]
-      this.modalProp.footVisible = true
       this.visible = true
     },
     edit(id) {
+      this.formData.id = id
       this.id = id
-      getUserById(id).then(res => {
-        let formVal = res.data
-
+      getMenuById(id).then(resp => {
+        let type = resp.data.type
+        this.currentMenuType = type
         this.$nextTick(() => {
-          // TODO 表单无法正常回显  需要加一个定时任务
           setTimeout(() => {
-            this.form.setFieldsValue({
-              nickName: formVal.nickName,
-              orgId: formVal.organization.id,
-              mobilePhone: formVal.mobilePhone,
-              email: formVal.email,
-              username: formVal.username,
-              // password: formVal.password,
-              gender: formVal.gender,
-              status: formVal.status,
-              remark: formVal.remark,
-              roleIds: formVal.roles.map((key) => {
-                return key.id
-              })
-            })
+            if ('F' === type) {
+              this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'redirect', 'orderNo', 'hidden', 'hideChildrenInMenu', 'type', 'hiddenHeaderContent', 'status', 'remark'))
+            } else if ('M' === type) {
+              this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'type', 'component', 'path', 'orderNo', 'permission', 'hidden', 'keepAlive', 'newWindow', 'status', 'remark'))
+            } else {
+              this.form.setFieldsValue(pick(resp.data, 'title', 'parentId', 'orderNo', 'permission', 'hidden', 'type', 'status', 'remark'))
+            }
           }, 0)
         })
-        this.modalProp.title = titles[1]
-        this.modalProp.btnIcon = icons[1]
-        this.modalProp.footVisible = true
-        this.visible = true
       })
-
+      this.modalProp.title = titles[1]
+      this.modalProp.btnIcon = icons[1]
+      this.visible = true
     },
     trimInput(e) {
       return e.target.value.trim()
@@ -287,15 +364,15 @@ export default {
     view(id) {
       this.modalProp.title = titles[2]
       this.$nextTick(() => {
-        this.modalProp.footVisible = false
       })
       this.visible = true
     },
     close() {
-      this.$emit('close')
       this.visible = false
+      this.parentTreeDisabled = false
       this.id = null
       this.form.resetFields()
+      this.currentMenuType = 'F'
     },
 
     handleOk() {
@@ -305,8 +382,6 @@ export default {
         // 验证表单没错误
         if (!err) {
           values.id = this.id
-          console.log('form values', values)
-
           _this.confirmLoading = true
           if (values.id) {
             edit(values).then(resp => {
@@ -345,11 +420,11 @@ export default {
     }
   },
   watch: {
-    /*id: function (id) {
-      this.$nextTick(() => {
-        this.form.validateFields(['password'], {force: true});
-      })
-    }*/
+    btnShow: function () {
+      let fieldsValue = this.form.getFieldsValue(['type']);
+      console.log(fieldsValue)
+      return true;
+    }
   }
 }
 </script>

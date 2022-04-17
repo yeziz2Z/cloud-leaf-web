@@ -38,7 +38,7 @@
                 <a-col :md="8" :sm="24">
                   <span class="table-page-search-submitButtons"
                         :style=" { float: 'right', overflow: 'hidden' }  ">
-                    <a-button type="primary" icon="search" @click="refresh">查询</a-button>
+                    <a-button type="primary" icon="search" v-permission="'system.user.list'" @click="refresh">查询</a-button>
                     <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
 
                   </span>
@@ -48,10 +48,10 @@
           </div>
 
           <div class="table-operator">
-            <a-button type="primary" icon="plus" @click="handleAdd">新建</a-button>
-            <a-button icon="edit" :disabled="ids.length !== 1" @click="handleEdit">修改</a-button>
+            <a-button type="primary" icon="plus" v-permission="'system.user.add'" @click="handleAdd">新建</a-button>
+            <a-button icon="edit" :disabled="ids.length !== 1" v-permission="'system.user.edit'" @click="handleEdit">编辑</a-button>
             <a-button icon="eye" :disabled="ids.length !== 1" @click="handleView">查看</a-button>
-            <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete">删除</a-button>
+            <a-button type="danger" :disabled="ids.length === 0" v-permission="'system.user.delete'" icon="delete" @click="handleDelete">删除</a-button>
 
           </div>
           <s-table
@@ -95,7 +95,7 @@
                   <a href="javascript:;">重置密码</a>
                 </a-menu-item>
                 <a-menu-item>
-                  <a @click="handleDelete(record)">删除</a>
+                  <a @click="handleDelete(record)" v-permission="'system.user.delete'">删除</a>
                 </a-menu-item>
               </a-menu>
             </a-dropdown>

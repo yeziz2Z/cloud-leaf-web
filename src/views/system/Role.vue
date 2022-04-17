@@ -1,5 +1,4 @@
 <template>
-  <page-header-wrapper :title="false">
     <a-card :bordered="false">
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
@@ -17,7 +16,7 @@
 
             <a-col :md="8" :sm="24">
               <span class="table-page-search-submitButtons">
-                <a-button type="primary" icon="search" @click="refresh">查询</a-button>
+                <a-button type="primary" icon="search" v-permission="'system.user.list1'" @click="refresh">查询</a-button>
                 <a-button style="margin-left: 8px" icon="reload" @click="reset">重置</a-button>
               </span>
             </a-col>
@@ -60,15 +59,13 @@
       <role-modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
       <role-permission-modal ref="rolePermissionModal" :menuTree="menuTree"/>
     </a-card>
-  </page-header-wrapper>
 </template>
 
 <script>
 import {STable} from '@/components'
-import {getRoleList} from "@/api/system/role"
 import RoleModal from './modules/RoleModal'
 import RolePermissionModal from './modules/RolePermissionModal'
-import {remove} from "@/api/system/role";
+import {remove, getRoleList} from "@/api/system/role";
 import {getMenuTree} from "@/api/system/menu";
 
 export default {
