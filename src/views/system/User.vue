@@ -178,11 +178,9 @@ export default {
       this.orgTree = res.data
     })
     getRoles().then(res => {
-      console.log("roles", res)
       this.roleOptions = res.data.map((role, idx) => {
         return {label: role.name, value: role.id}
       })
-      console.log("roles", this.roleOptions)
     })
   },
   methods: {

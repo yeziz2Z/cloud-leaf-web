@@ -420,11 +420,7 @@ export default {
     }
   },
   watch: {
-    btnShow: function () {
-      let fieldsValue = this.form.getFieldsValue(['type']);
-      console.log(fieldsValue)
-      return true;
-    }
+
   }
 }
 </script>

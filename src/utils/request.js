@@ -3,7 +3,7 @@ import store from '@/store'
 import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
 import {VueAxios} from './axios'
-import {ACCESS_TOKEN} from '@/store/mutation-types'
+import {ACCESS_TOKEN, REFRESH_TOKEN} from '@/store/mutation-types'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -24,7 +24,7 @@ const errorHandler = (error) => {
         description: data.message
       })
     }
-    if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
+    /*if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
       notification.error({
         message: 'Unauthorized',
         description: 'Authorization verification failed'
@@ -32,6 +32,32 @@ const errorHandler = (error) => {
       if (token) {
         store.dispatch('Logout').then(() => {
           window.location.reload()
+        })
+      }
+    }*/
+    if (error.response.status === 401) {
+      //非法 token 重新登录
+      if (data.code === 400001 && token) {
+        store.dispatch('Logout').then(() => {
+          window.location.reload()
+        })
+      }
+      // token过期
+      if (data.code === 400002) {
+        store.dispatch('RefreshToken').then(() => {
+          return request(error.config)
+        }).catch(error => {
+          if (error && error.code === 400002) {
+            notification.error({
+              message: '登录超时',
+              description: error.msg
+            })
+          }
+          store.dispatch('Logout').then(() => {
+            setTimeout(() => {
+              window.location.reload()
+            }, 1000)
+          })
         })
       }
     }
