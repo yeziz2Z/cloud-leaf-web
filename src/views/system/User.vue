@@ -154,11 +154,11 @@ export default {
           dataIndex: 'status',
           scopedSlots: {customRender: 'status'}
         },
-        {
+        /*{
           title: '手机号',
           dataIndex: 'mobilePhone',
           sorter: true
-        },
+        },*/
         {
           title: '操作',
           dataIndex: 'action',

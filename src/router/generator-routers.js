@@ -93,7 +93,6 @@ export const generatorDynamicRouter = () => {
     loginService
       .getCurrentUserNav()
       .then(res => {
-        console.log('generatorDynamicRouter response:', res)
         const { data } = res
         const menuNav = []
         const childrenNav = []
@@ -101,10 +100,8 @@ export const generatorDynamicRouter = () => {
         listToTree(data, childrenNav, 0)
         rootRouter.children = childrenNav
         menuNav.push(rootRouter)
-        console.log('menuNav', menuNav)
         const routers = generator(menuNav)
         routers.push(notFoundRouter)
-        console.log('routers', routers)
         resolve(routers)
       })
       .catch(err => {
@@ -139,6 +136,7 @@ export const generator = (routerMap, parent) => {
         icon: item.icon ,
         hiddenHeaderContent: item.hiddenHeaderContent,
         target: item.newWindow ? item.path : undefined,
+        keepAlive: item.keepAlive
       }
     }
     // 是否设置了隐藏菜单

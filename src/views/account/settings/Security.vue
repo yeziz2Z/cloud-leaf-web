@@ -1,4 +1,4 @@
-<template>
+<template >
   <a-list
     itemLayout="horizontal"
     :dataSource="data"

@@ -172,7 +172,6 @@ export default {
     this.form.getFieldDecorator('keys', {})
   },
   created() {
-    console.log('roles::', this.roles)
   },
   methods: {
     add() {
