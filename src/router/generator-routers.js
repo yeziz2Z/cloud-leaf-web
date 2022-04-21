@@ -136,7 +136,7 @@ export const generator = (routerMap, parent) => {
         icon: item.icon ,
         hiddenHeaderContent: item.hiddenHeaderContent,
         target: item.newWindow ? item.path : undefined,
-        keepAlive: item.keepAlive
+
       }
     }
     // 是否设置了隐藏菜单

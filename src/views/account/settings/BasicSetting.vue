@@ -3,27 +3,51 @@
     <a-row :gutter="16" type="flex" justify="center">
       <a-col :order="isMobile ? 2 : 1" :md="24" :lg="16">
 
-        <a-form :form="form" layout="vertical">
+        <a-form ref="baseForm" :form="form" layout="vertical">
           <a-form-item
             :label="$t('account.settings.basic.nickname')"
           >
-            <a-input :placeholder="$t('account.settings.basic.nickname-message')"/>
+            <a-input v-decorator="['nickName',
+                {rules:[{required:true,message:'请输入昵称',whitespace:true}],
+                getValueFromEvent: e => trimInput(e),
+                trigger:'blur',
+                validateTrigger:'blur'
+                }]" :placeholder="$t('account.settings.basic.nickname-message')"/>
+          </a-form-item>
+          <!--          <a-form-item
+                      :label="$t('account.settings.basic.email')"
+                      :required="false"
+                    >
+                      <a-input v-model:value="user.mobilePhone" placeholder="请输入手机号"/>
+                    </a-form-item>-->
+          <a-form-item
+            :label="$t('account.settings.basic.email')"
+          >
+            <a-input v-decorator="['email',
+                {
+                  rules: [{required:true,message:'请输入邮箱'},
+                  {type: 'email', message: '请输入正确邮件格式'}],
+                  getValueFromEvent: e => trimInput(e),
+                  trigger: 'blur',
+                  validateTrigger: 'blur'
+                }
+            ]"
+                     placeholder="example@ant.design"/>
           </a-form-item>
           <a-form-item
             :label="$t('account.settings.basic.profile')"
           >
-            <a-textarea rows="4" :placeholder="$t('account.settings.basic.profile-message')"/>
-          </a-form-item>
-
-          <a-form-item
-            :label="$t('account.settings.basic.email')"
-            :required="false"
-          >
-            <a-input placeholder="example@ant.design"/>
+            <a-textarea rows="3" v-decorator="['remark',
+                {rules:[{}],
+                getValueFromEvent: e => trimInput(e),
+                trigger:'blur',
+                validateTrigger:'blur'
+                }]"
+                        :placeholder="$t('account.settings.basic.profile-message')"/>
           </a-form-item>
 
           <a-form-item>
-            <a-button type="primary">{{ $t('account.settings.basic.update') }}</a-button>
+            <a-button type="primary" @click="submit">{{ $t('account.settings.basic.update') }}</a-button>
           </a-form-item>
         </a-form>
 
@@ -49,6 +73,8 @@
 import AvatarModal from './AvatarModal'
 import {baseMixin} from '@/store/app-mixin'
 import {mapGetters} from "vuex";
+import {updateUserProfile} from "@/api/system/user";
+import pick from "lodash.pick";
 
 export default {
   mixins: [baseMixin],
@@ -74,16 +100,59 @@ export default {
         fixed: true,
         fixedNumber: [1, 1]
       },
+      user: {},
       form: this.$form.createForm(this),
+
     }
   },
   methods: {
     setAvatar(url) {
       this.option.img = url
-    }
+    },
+    trimInput(e) {
+      return e.target.value.trim()
+    },
+    submit() {
+      // 触发表单验证
+      this.form.validateFields((err, values) => {
+        // 验证表单没错误
+        if (!err) {
+          values.id = this.userInfo.id
+          updateUserProfile(values).then(resp => {
+            if (resp.code === 200) {
+              this.userInfo.nickName = values.nickName
+              this.userInfo.remark = values.remark
+              this.userInfo.email = values.email
+
+              this.$message.success('更新成功')
+
+
+            } else {
+              this.$message.error(resp.msg)
+            }
+          }).catch(err => {
+            console.log(err)
+          }).finally(() => {
+          })
+        }
+      })
+    },
   },
   computed: {
     ...mapGetters(['userInfo'])
+  },
+  created() {
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.form.setFieldsValue(pick(this.userInfo, 'nickName', 'email', 'remark'))
+    })
+    /*this.user = {
+      nickName: this.userInfo.nickName,
+      mobilePhone: this.userInfo.mobilePhone,
+      email: this.userInfo.email,
+      remark: this.userInfo.remark,
+    }*/
   }
 }
 </script>

@@ -120,14 +120,11 @@ export default {
         state,
         Login
       } = this
-      console.log("handleSubmit",this.form)
       state.loginBtn = true
 
       validateFields({force: true}, (err, values) => {
         if (!err) {
-          console.log('login form', values)
           const loginParams = {...values}
-          console.log(loginParams);
           loginParams.password = values.password
           Login(loginParams)
             .then((res) => this.loginSuccess(res))

@@ -203,7 +203,7 @@ export const asyncRouterMap = [
       },
 
       // account
-      {
+      /*{
         path: '/account',
         component: RouteView,
         redirect: '/account/center',
@@ -267,7 +267,7 @@ export const asyncRouterMap = [
             ]
           }
         ]
-      },
+      },*/
 
       // other
 
@@ -386,13 +386,14 @@ export const constantRouterMap = [
         component: RouteView,
         redirect: '/account/center',
         name: 'account',
-        meta: { title: '个人中心', icon: 'user', keepAlive: true },
+        meta: { title: '个人中心', icon: 'user', keepAlive: false },
+        hideChildrenInMenu: true,
         children: [
           {
             path: '/account/center',
             name: 'center',
             component: () => import('@/views/account/center'),
-            meta: { title: '个人中心', keepAlive: true }
+            meta: { title: '个人中心', keepAlive: false }
           },
           {
             path: '/account/settings',
@@ -406,14 +407,14 @@ export const constantRouterMap = [
                 path: '/account/settings/basic',
                 name: 'BasicSettings',
                 component: () => import('@/views/account/settings/BasicSetting'),
-                meta: { title: '基本设置', hidden: true}
+                meta: { title: '基本设置', hidden: true,keepAlive: false}
               },
               {
                 path: '/account/settings/security',
                 name: 'SecuritySettings',
                 component: () => import('@/views/account/settings/Security'),
                 meta: {
-                  title: '安全设置',
+                  title: '密码修改',
                   hidden: true,
                   keepAlive: true
                 }

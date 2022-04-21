@@ -62,7 +62,6 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
           const result = response.data
-          console.log("GetInfo response", response);
           // if (result.roles && result.roles.permissions.length > 0) {
           if (result.roles) {
             commit('SET_ROLES', result.roles)
