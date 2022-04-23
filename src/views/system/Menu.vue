@@ -30,7 +30,7 @@
       </div>
 
       <div class="table-operator">
-        <a-button type="primary" icon="plus"  @click="handleAdd">新建</a-button>
+        <a-button type="primary" icon="plus"  v-permission="'system.menu.add'" @click="handleAdd">新建</a-button>
         <!--        <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete">删除</a-button>-->
       </div>
       <s-table

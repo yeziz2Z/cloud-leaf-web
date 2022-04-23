@@ -4,7 +4,7 @@
 
       <a-col :span="5">
         <a-card>
-          <a-tree :tree-data="orgTree" @select="handleClick"/>
+          <a-tree :default-expand-all="true" :tree-data="orgTree" @select="handleClick"/>
         </a-card>
       </a-col>
 
