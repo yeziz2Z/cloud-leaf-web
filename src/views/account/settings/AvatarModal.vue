@@ -31,7 +31,7 @@
     <br>
     <a-row>
       <a-col :lg="2" :md="2">
-        <a-upload name="file" :beforeUpload="beforeUpload" :showUploadList="false">
+        <a-upload name="file" :beforeUpload="beforeUpload" accept=".png,.jpg,.jpeg,.bmp" :showUploadList="false">
           <a-button icon="upload">选择图片</a-button>
         </a-upload>
       </a-col>
@@ -48,15 +48,18 @@
         <a-button icon="redo" @click="rotateRight"/>
       </a-col>
       <a-col :lg="{span: 2, offset: 6}" :md="2">
-        <a-button type="primary" @click="finish('blob')">保存</a-button>
+        <a-button type="primary" @click="finish()">保存</a-button>
       </a-col>
     </a-row>
   </a-modal>
 
 </template>
 <script>
+import store from '@/store'
+import {updateAvatar} from "@/api/system/user"
+
 export default {
-  data () {
+  data() {
     return {
       visible: false,
       id: null,
@@ -65,7 +68,7 @@ export default {
       uploading: false,
       options: {
         // img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        img: '',
+        img: store.getters.avatar,
         autoCrop: true,
         autoCropWidth: 200,
         autoCropHeight: 200,
@@ -75,29 +78,29 @@ export default {
     }
   },
   methods: {
-    edit (id) {
+    edit(id) {
       this.visible = true
       this.id = id
       /* 获取原始头像 */
     },
-    close () {
+    close() {
       this.id = null
       this.visible = false
     },
-    cancelHandel () {
+    cancelHandel() {
       this.close()
     },
-    changeScale (num) {
+    changeScale(num) {
       num = num || 1
       this.$refs.cropper.changeScale(num)
     },
-    rotateLeft () {
+    rotateLeft() {
       this.$refs.cropper.rotateLeft()
     },
-    rotateRight () {
+    rotateRight() {
       this.$refs.cropper.rotateRight()
     },
-    beforeUpload (file) {
+    beforeUpload(file) {
       const reader = new FileReader()
       // 把Array Buffer转化为blob 如果是base64不需要
       // 转化为base64
@@ -110,21 +113,44 @@ export default {
 
       return false
     },
+    finish() {
+      const _this = this
+      this.$refs.cropper.getCropBlob(data => {
+        this.model = true
+        const formData = new FormData()
+        formData.append('file', data)
+        updateAvatar(formData).then(response => {
+          if (response.code === 200) {
+            _this.$message.success('上传成功')
+            store.commit('SET_AVATAR', response.data)
+            _this.$emit('ok', response.data)
+            _this.visible = false
+          } else {
+            _this.$message.success(response.msg)
+          }
 
+        });
+      });
+    },
     // 上传图片（点击上传按钮）
-    finish (type) {
-      console.log('finish')
+    /*finish(type) {
       const _this = this
       const formData = new FormData()
       // 输出
       if (type === 'blob') {
         this.$refs.cropper.getCropBlob((data) => {
-          const img = window.URL.createObjectURL(data)
+          // const img = window.URL.createObjectURL(data)
           this.model = true
-          this.modelSrc = img
-          formData.append('file', data, this.fileName)
-          this.$http.post('https://www.mocky.io/v2/5cc8019d300000980a055e76', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-            .then((response) => {
+          // this.modelSrc = img
+          // formData.append('file', data, this.fileName)
+          formData.append('file', data)
+          // this.$http.post('https://www.mocky.io/v2/5cc8019d300000980a055e76', formData, {
+          //   contentType: false,
+          //   processData: false,
+          //   headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+          // })
+
+          updateAvatar(data).then((response) => {
               console.log('upload response:', response)
               // var res = response.data
               // if (response.status === 'done') {
@@ -135,7 +161,7 @@ export default {
               //   this.visible = false
               // }
               _this.$message.success('上传成功')
-              _this.$emit('ok', response.url)
+              _this.$emit('ok', response.data)
               _this.visible = false
             })
         })
@@ -145,8 +171,8 @@ export default {
           this.modelSrc = data
         })
       }
-    },
-    okHandel () {
+    },*/
+    okHandel() {
       const vm = this
 
       vm.confirmLoading = true
@@ -157,7 +183,7 @@ export default {
       }, 2000)
     },
 
-    realTime (data) {
+    realTime(data) {
       this.previews = data
     }
   }
@@ -166,19 +192,19 @@ export default {
 
 <style lang="less" scoped>
 
-  .avatar-upload-preview {
-    position: absolute;
-    top: 50%;
-    transform: translate(50%, -50%);
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    box-shadow: 0 0 4px #ccc;
-    overflow: hidden;
+.avatar-upload-preview {
+  position: absolute;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #ccc;
+  overflow: hidden;
 
-    img {
-      width: 100%;
-      height: 100%;
-    }
+  img {
+    width: 100%;
+    height: 100%;
   }
+}
 </style>

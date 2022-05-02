@@ -4,7 +4,8 @@ const api = {
   user: '/user',
   userList: '/user/list',
   userProfile: '/user/profile',
-  updateUserPwd: '/user/updatePwd'
+  updateUserPwd: '/user/updatePwd',
+  updateAvatar: '/user/avatar'
 
 }
 
@@ -61,6 +62,14 @@ export function updateUserPwd(data) {
     url: api.updateUserPwd,
     method: 'put',
     params: data
+  })
+}
+
+export function updateAvatar(data) {
+  return request({
+    url: api.updateAvatar,
+    method: 'post',
+    data: data
   })
 }
 

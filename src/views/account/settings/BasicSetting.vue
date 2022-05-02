@@ -58,7 +58,7 @@
           <div class="mask">
             <a-icon type="plus"/>
           </div>
-          <img :src="option.img"/>
+          <img :src="avatar || option.img"/>
         </div>
       </a-col>
 
@@ -72,9 +72,9 @@
 <script>
 import AvatarModal from './AvatarModal'
 import {baseMixin} from '@/store/app-mixin'
-import {mapGetters} from "vuex";
-import {updateUserProfile} from "@/api/system/user";
-import pick from "lodash.pick";
+import {mapGetters} from "vuex"
+import {updateUserProfile} from "@/api/system/user"
+import pick from "lodash.pick"
 
 export default {
   mixins: [baseMixin],
@@ -139,7 +139,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['userInfo'])
+    ...mapGetters(['userInfo','avatar'])
   },
   created() {
   },

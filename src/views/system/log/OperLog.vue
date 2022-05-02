@@ -23,7 +23,7 @@
           </a-col>
           <a-col :md="8" :sm="24">
             <a-form-item label="操作类型">
-              <a-input v-model="queryParam.bussinessType" placeholder=""/>
+              <a-select allow-clear :options="businessTypeOptions" v-model="queryParam.businessType"></a-select>
             </a-form-item>
           </a-col>
 
@@ -89,6 +89,16 @@ export default {
     return {
       //查询参数
       queryParam: {},
+      businessTypeOptions: [
+        {label: '其他', value: 0},
+        {label: '新增', value: 1},
+        {label: '修改', value: 2},
+        {label: '查询', value: 3},
+        {label: '删除', value: 4},
+        {label: '授权', value: 5},
+        {label: '导入', value: 6},
+        {label: '导出', value: 7}
+      ],
       columns: [
         {
           title: '系统模块',
@@ -96,7 +106,8 @@ export default {
         },
         {
           title: '操作类型',
-          dataIndex: 'businessType'
+          dataIndex: 'businessType',
+          customRender: (type) => this.businessTypeOptions.find((item)=>{return item.value === type}).label
         },
         {
           title: '请求方式',
@@ -109,6 +120,11 @@ export default {
         {
           title: '操作ip',
           dataIndex: 'operIp'
+        },
+        {
+          title: '状态',
+          dataIndex: 'status',
+          scopedSlots: {customRender: 'status'}
         },
         {
           title: '接口耗时',
@@ -177,7 +193,7 @@ export default {
         param.startDate = moment(param.loginTime[0]).format('YYYY-MM-DD')
         param.endDate = moment(param.loginTime[1]).format('YYYY-MM-DD')
       }
-      return getOperLogs(Object.assign(parameter, pick(param, 'username', 'ipaddr', 'status', 'startDate', 'endDate'))).then(resp => {
+      return getOperLogs(Object.assign(parameter, pick(param, 'module', 'operName', 'businessType', 'status', 'startDate', 'endDate'))).then(resp => {
         return resp.data
       })
     },
