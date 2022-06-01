@@ -2,12 +2,12 @@ import request from '@/utils/request'
 
 const api = {
   user: '/user',
-  role: '/role',
+  role: '/cloud-leaf-admin/role',
   roles: '/role/list',
-  service: '/user/service',
+  service: '/cloud-leaf-admin/user/service',
   permission: '/permission',
   permissionNoPager: '/permission/no-pager',
-  orgTree: '/org/tree'
+  orgTree: '/cloud-leaf-admin/org/tree'
 }
 
 export default api

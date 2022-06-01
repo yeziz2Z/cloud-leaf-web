@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
 const api = {
-  tree: '/org/tree',
-  org: '/org',
-  organizationTree: '/org/getOrganizationTree',
+  tree: '/cloud-leaf-admin/org/tree',
+  org: '/cloud-leaf-admin/org',
+  organizationTree: '/cloud-leaf-admin/org/getOrganizationTree',
 }
 
 export function getOrgTree(parameter) {

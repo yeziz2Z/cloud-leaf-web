@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
 const api = {
-  operLog: '/operLog',
-  operLogs: '/operLog/page',
+  operLog: '/cloud-leaf-admin/operLog',
+  operLogs: '/cloud-leaf-admin/operLog/page',
 }
 
 export function remove(logIds) {

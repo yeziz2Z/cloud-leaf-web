@@ -1,9 +1,9 @@
 import request from '@/utils/request'
 
 const api = {
-  menu: '/menu',
-  menuTree: '/menu/tree',
-  menuPage: '/role/page',
+  menu: '/cloud-leaf-admin/menu',
+  menuTree: '/cloud-leaf-admin/menu/tree',
+  menuPage: '/cloud-leaf-admin/role/page',
 }
 
 export function getMenuTree(parameter){

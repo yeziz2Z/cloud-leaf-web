@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 
 const api = {
-  role: '/role',
-  roles: '/role/list',
-  rolePage: '/role/page',
-  roleMenus: '/role/menus'
+  role: '/cloud-leaf-admin/role',
+  roles: '/cloud-leaf-admin/role/list',
+  rolePage: '/cloud-leaf-admin/role/page',
+  roleMenus: '/cloud-leaf-admin/role/menus'
 }
 
 

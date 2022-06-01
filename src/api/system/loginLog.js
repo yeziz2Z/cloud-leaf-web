@@ -1,8 +1,8 @@
 import request from '@/utils/request'
 
 const api = {
-  loginLog: '/loginLog',
-  loginLogs: '/loginLog/page',
+  loginLog: '/cloud-leaf-admin/loginLog',
+  loginLogs: '/cloud-leaf-admin/loginLog/page',
 }
 
 export function remove(logIds) {

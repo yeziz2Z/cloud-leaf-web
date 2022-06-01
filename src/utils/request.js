@@ -11,9 +11,11 @@ const request = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
   timeout: 6000 // 请求超时时间
 })
-
+let refreshing = false, // 正在刷新标识，避免重复刷新
+  waitQueue = []  // 请求等待队列
 // 异常拦截处理器
 const errorHandler = (error) => {
+  let config = error.config
   if (error.response) {
     const data = error.response.data
     // 从 localstorage 获取 token
@@ -38,27 +40,43 @@ const errorHandler = (error) => {
     if (error.response.status === 401) {
       //非法 token 重新登录
       if (data.code === 400001 && token) {
-        store.dispatch('Logout').then(() => {
+        store.dispatch('ResetToken').then(() => {
           window.location.reload()
         })
       }
       // token过期
       if (data.code === 400002) {
-        store.dispatch('RefreshToken').then(() => {
-          return request(error.config)
-        }).catch(error => {
-          if (error && error.code === 400002) {
+        if (refreshing) { // 当前正在尝试刷新 access_token
+          return new Promise((resolve => {
+            waitQueue.push((token) => {
+              config.headers['Authorization'] = token
+              config.baseURL = process.env.VUE_APP_API_BASE_URL
+              resolve(request(config))
+            })
+          }))
+        } else {
+          refreshing = true
+          store.dispatch('RefreshToken').then((token) => {
+            config.headers['Authorization'] = token
+            config.baseURL = process.env.VUE_APP_API_BASE_URL // 请求重试时，url已包含baseURL
+            waitQueue.forEach(callback => callback(token)) // 已成功刷新token，队列中的所有请求重试
+            waitQueue = []
+            return request(config)
+          }).catch(error => {
             notification.error({
-              message: '登录超时',
+              message: '当前页面已失效，请重新登录',
               description: error.msg
             })
-          }
-          store.dispatch('Logout').then(() => {
-            setTimeout(() => {
-              window.location.reload()
-            }, 1000)
+            store.dispatch('ResetToken').then(() => {
+              setTimeout(() => {
+                window.location.reload()
+              }, 1000)
+            })
+          }).finally(() => {
+            refreshing = false
           })
-        })
+        }
+
       }
     }
   }
@@ -71,7 +89,7 @@ request.interceptors.request.use(config => {
   // 如果 token 存在
   // 让每个请求携带自定义 token 请根据实际情况自行修改
   if (token) {
-    config.headers['Access-Token'] = token
+    config.headers['Authorization'] = token
   }
   return config
 }, errorHandler)

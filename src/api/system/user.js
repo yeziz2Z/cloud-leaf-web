@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
 const api = {
-  user: '/user',
-  userList: '/user/list',
-  userProfile: '/user/profile',
-  updateUserPwd: '/user/updatePwd',
-  updateAvatar: '/user/avatar'
+  user: '/cloud-leaf-admin/user',
+  userList: '/cloud-leaf-admin/user/list',
+  userProfile: '/cloud-leaf-admin/user/profile',
+  updateUserPwd: '/cloud-leaf-admin/user/updatePwd',
+  updateAvatar: '/cloud-leaf-admin/user/avatar'
 
 }
 

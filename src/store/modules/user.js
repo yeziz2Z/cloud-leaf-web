@@ -43,9 +43,9 @@ const user = {
         login(userInfo).then(response => {
           if (response.code == 200) {
             const result = response.data
-            storage.set(ACCESS_TOKEN, result.accessToken)
-            storage.set(REFRESH_TOKEN, result.refreshToken)
-            commit('SET_TOKEN', result.accessToken)
+            storage.set(ACCESS_TOKEN, result.token_type + ' ' + result.access_token)
+            storage.set(REFRESH_TOKEN, result.refresh_token)
+            commit('SET_TOKEN', result.token_type + ' ' + result.access_token)
             resolve()
           } else {
             reject(response)
@@ -98,16 +98,31 @@ const user = {
         })
       })
     },
-    // 登出
+    ResetToken({commit}) {
+      return new Promise(resolve => {
+        commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
+        storage.remove(ACCESS_TOKEN)
+        storage.remove(REFRESH_TOKEN)
+        resolve()
+      })
+    },
+    // 刷新TOKEN
     RefreshToken({commit}) {
+      commit('SET_TOKEN', undefined)
+      storage.remove(ACCESS_TOKEN)
       return new Promise((resolve, reject) => {
-        refreshToken({refreshToken: storage.get(REFRESH_TOKEN)}).then(resp => {
+        login({
+          grant_type: 'refresh_token',
+          refresh_token: storage.get(REFRESH_TOKEN)
+        }).then(resp => {
           if (resp.code === 200) {
-            storage.set(ACCESS_TOKEN, resp.data.accessToken)
-            // 更新 refreshToken
-            // storage.set(REFRESH_TOKEN, resp.data.refreshToken)
-            commit('SET_TOKEN', resp.data.accessToken)
-            resolve()
+            const result = resp.data
+            const token = result.token_type + ' ' + result.access_token
+            storage.set(ACCESS_TOKEN, token)
+            storage.set(REFRESH_TOKEN, result.refresh_token)
+            commit('SET_TOKEN', token)
+            resolve(token)
           } else {
             reject(resp)
           }

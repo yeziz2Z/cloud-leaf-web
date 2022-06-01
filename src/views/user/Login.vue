@@ -126,6 +126,7 @@ export default {
         if (!err) {
           const loginParams = {...values}
           loginParams.password = values.password
+          loginParams.grant_type = 'captcha'
           Login(loginParams)
             .then((res) => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))

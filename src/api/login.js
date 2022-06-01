@@ -1,17 +1,17 @@
 import request from '@/utils/request'
 
 const userApi = {
-  Login: '/auth/login',
-  Captcha: '/auth/captcha',
-  Logout: '/auth/logout',
+  Login: '/cloud-leaf-oauth2/oauth/token',
+  Captcha: '/captcha',
+  Logout: '/cloud-leaf-oauth2/oauth/logout',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',
   twoStepCode: '/auth/2step-code',
   SendSms: '/account/sms',
   SendSmsErr: '/account/sms_err',
   // get my info
-  UserInfo: '/user/info',
-  UserMenu: '/user/nav',
+  UserInfo: '/cloud-leaf-admin/user/info',
+  UserMenu: '/cloud-leaf-admin/user/nav',
   RefreshToken: '/auth/refreshToken'
 }
 
@@ -26,11 +26,22 @@ const userApi = {
  * @param parameter
  * @returns {*}
  */
-export function login(parameter) {
+/*export function login(parameter) {
   return request({
     url: userApi.Login,
     method: 'post',
     data: parameter
+  })
+}*/
+
+export function login(parameter) {
+  return request({
+    url: userApi.Login,
+    method: 'post',
+    params: parameter,
+    headers: {
+      Authorization: 'Basic Y2xvdWQtbGVhZi1hZG1pbjo4ODk1Mjc='
+    },
   })
 }
 
