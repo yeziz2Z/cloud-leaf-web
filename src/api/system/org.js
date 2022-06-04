@@ -3,12 +3,12 @@ import request from '@/utils/request'
 const api = {
   tree: '/cloud-leaf-admin/org/tree',
   org: '/cloud-leaf-admin/org',
-  organizationTree: '/cloud-leaf-admin/org/getOrganizationTree',
+  organizationTree: '/cloud-leaf-admin/org/organizationTree',
 }
 
 export function getOrgTree(parameter) {
   return request({
-    url: api.orgTree,
+    url: api.tree,
     method: 'get',
     params: parameter
   })

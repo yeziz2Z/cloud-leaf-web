@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 const api = {
   user: '/cloud-leaf-admin/user',
-  userList: '/cloud-leaf-admin/user/list',
+  userList: '/cloud-leaf-admin/user/page',
   userProfile: '/cloud-leaf-admin/user/profile',
   updateUserPwd: '/cloud-leaf-admin/user/updatePwd',
   updateAvatar: '/cloud-leaf-admin/user/avatar'
@@ -43,7 +43,7 @@ export function list(param) {
   return request({
     url: api.userList,
     method: 'get',
-    parameter: param
+    params: param
   })
 }
 

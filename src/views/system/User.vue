@@ -38,7 +38,8 @@
                 <a-col :md="8" :sm="24">
                   <span class="table-page-search-submitButtons"
                         :style=" { float: 'right', overflow: 'hidden' }  ">
-                    <a-button type="primary" icon="search" v-permission="'system.user.list'" @click="refresh">查询</a-button>
+                    <a-button type="primary" icon="search" v-permission="'system.user.list'"
+                              @click="refresh">查询</a-button>
                     <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
 
                   </span>
@@ -49,9 +50,13 @@
 
           <div class="table-operator">
             <a-button type="primary" icon="plus" v-permission="'system.user.add'" @click="handleAdd">新建</a-button>
-            <a-button icon="edit" :disabled="ids.length !== 1" v-permission="'system.user.edit'" @click="handleEdit">编辑</a-button>
+            <a-button icon="edit" :disabled="ids.length !== 1" v-permission="'system.user.edit'" @click="handleEdit">
+              编辑
+            </a-button>
             <a-button icon="eye" :disabled="ids.length !== 1" @click="handleView">查看</a-button>
-            <a-button type="danger" :disabled="ids.length === 0" v-permission="'system.user.delete'" icon="delete" @click="handleDelete">删除</a-button>
+            <a-button type="danger" :disabled="ids.length === 0" v-permission="'system.user.delete'" icon="delete"
+                      @click="handleDelete">删除
+            </a-button>
 
           </div>
           <s-table
@@ -67,7 +72,9 @@
           >
 
             <span slot="roles" slot-scope="text,record">
-              <a-tag v-for="(role) in text " :color="colors[Math.floor(Math.random()*6)]" :key="role.id">{{ role.name }}</a-tag>
+              <a-tag v-for="(role) in text " :color="colors[Math.floor(Math.random()*6)]" :key="role.id">{{
+                  role.name
+                }}</a-tag>
             </span>
             <span slot="status" slot-scope="text, record">
               <a-popconfirm
@@ -112,8 +119,9 @@
 <script>
 import {STable} from '@/components'
 import UserModal from './modules/UserModal'
-import {getOrgTree, getServiceList, getRoles} from '@/api/manage'
-import {remove} from '@/api/system/user'
+import {getOrgTree} from '@/api/system/org'
+import {list, remove} from '@/api/system/user'
+import {getRoles} from '@/api/system/role'
 import {Tree} from 'ant-design-vue'
 
 export default {
@@ -143,7 +151,7 @@ export default {
         {
           title: '角色',
           dataIndex: 'roles',
-          scopedSlots: {customRender: 'roles' }
+          scopedSlots: {customRender: 'roles'}
         },
         {
           title: '部门',
@@ -170,7 +178,7 @@ export default {
       roleOptions: [],
       ids: [],
       selectedRows: [],
-      colors : ['pink','red','orange','green','cyan','blue','purple']
+      colors: ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple']
     }
   },
   created() {
@@ -192,7 +200,7 @@ export default {
     refresh() {
       this.$refs.table.refresh(true)
     },
-    resetPassword(){
+    resetPassword() {
 
     },
 
@@ -204,7 +212,7 @@ export default {
           size: page.pageSize
         }
       }
-      return getServiceList(Object.assign(parameter, this.queryParam))
+      return list(Object.assign(parameter, this.queryParam))
         .then(res => {
           return res.data
         })
@@ -216,7 +224,6 @@ export default {
 
     },
     handleAdd(item) {
-      console.log('add button, item', item)
       this.$refs.modal.add(item.key)
     },
     handleEdit(record) {
@@ -231,11 +238,11 @@ export default {
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + userIds + '的数据',
-        onOk () {
+        onOk() {
           return remove(userIds)
             .then(resp => {
               if (resp.code === 200) {
-                _this.$message.success('删除成功',3)
+                _this.$message.success('删除成功', 3)
                 _this.refresh()
               } else {
                 _this.$message.error(resp.msg)
@@ -243,7 +250,8 @@ export default {
 
             })
         },
-        onCancel () {}
+        onCancel() {
+        }
       })
 
       /*remove(userIds).then(resp => {
@@ -258,23 +266,19 @@ export default {
       })*/
     },
     handleTitleClick(item) {
-      console.log('handleTitleClick', item)
     },
     titleClick(e) {
-      console.log('titleClick', e)
     },
     handleSaveOk() {
       this.ids = []
       this.refresh()
     },
     handleSaveClose(e) {
-      console.log("handleSaveClose", e)
     },
 
     onSelectChange(ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
-      console.log(this.ids)
     }
   }
 }

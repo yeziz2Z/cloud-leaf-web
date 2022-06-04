@@ -12,7 +12,7 @@
       <a-form :form="form" disabled="true">
         <a-row>
           <a-col span="24">
-            <a-form-item label="父级菜单"  :label-col="{span:3}" :wrapper-col="{span:21}">
+            <a-form-item label="父级菜单" :label-col="{span:3}" :wrapper-col="{span:21}">
               <a-tree-select
                 :disabled="parentTreeDisabled"
                 v-decorator="menuForm.parentId"
@@ -180,6 +180,22 @@
               </a-form-item>
             </a-col>
           </a-row>
+          <a-row>
+            <a-col span="24">
+              <a-form-item label="权限URL" :help="permissionUrlHelp" :label-col="{span:3}" :wrapper-col="{span:21}">
+                <a-input-group compact>
+                  <a-select placeholder="所属服务" v-model="permissionUrl.service" style="width: 20%"
+                            :options="servicesOptions">
+                  </a-select>
+                  <a-select placeholder="请求方式" v-model="permissionUrl.method" style="width: 20%"
+                            :options="requestMethodOptions">
+                  </a-select>
+                  <a-input style="width: 60%" v-model="permissionUrl.url" @change="formatUrl" placeholder="/user/"/>
+                </a-input-group>
+              </a-form-item>
+            </a-col>
+
+          </a-row>
         </div>
 
         <a-row>
@@ -226,8 +242,19 @@ export default {
         title: '',
         btnIcon: ''
       },
+      permissionUrl: {
+        service: undefined,
+        method: undefined,
+        url: ''
+      },
       currentMenuType: 'F',
+      // todo 替换为 字典值
       genderOptions: [{label: '目录', value: 'F'}, {label: '菜单', value: 'M'}, {label: '按钮', value: 'B'}],
+      servicesOptions: [{label: '系统服务', value: 'cloud-leaf-admin'}, {label: '博客服务', value: 'cloud-leaf-blog'}],
+      requestMethodOptions: [{label: '不限', value: '*'}, {label: 'GET', value: 'GET'}, {
+        label: 'POST',
+        value: 'POST'
+      }, {label: 'PUT', value: 'PUT'}, {label: 'DELETE', value: 'DELETE'}, {label: 'PATCH', value: 'PATCH'}],
       id: null,
       parentTreeDisabled: false,
       layout: {
@@ -315,7 +342,12 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    permissionUrlHelp: function () {
+      let res = (this.permissionUrl.method || '') + ':/' + (this.permissionUrl.service || '') + this.permissionUrl.url
+      return res === ':/' ? '' : res
+    }
+  },
   beforeCreate() {
     this.form = this.$form.createForm(this)
   },
@@ -339,24 +371,31 @@ export default {
     edit(id) {
       this.formData.id = id
       this.id = id
+      this.modalProp.title = titles[1]
+      this.modalProp.btnIcon = icons[1]
+      this.visible = true
       getMenuById(id).then(resp => {
         let type = resp.data.type
         this.currentMenuType = type
         this.$nextTick(() => {
-          setTimeout(() => {
             if ('F' === type) {
               this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'redirect', 'orderNo', 'hidden', 'hideChildrenInMenu', 'type', 'hiddenHeaderContent', 'status', 'remark'))
             } else if ('M' === type) {
               this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'type', 'component', 'path', 'orderNo', 'permission', 'hidden', 'keepAlive', 'newWindow', 'status', 'remark'))
             } else {
+              if (resp.data.permissionUrl){
+                let pArr = resp.data.permissionUrl.split(':/')
+                this.permissionUrl.method = pArr[0]
+                const idx = pArr[1].indexOf('/')
+                this.permissionUrl.service = pArr[1].substring(0,idx)
+                this.permissionUrl.url = pArr[1].substring(idx)
+              }
               this.form.setFieldsValue(pick(resp.data, 'title', 'parentId', 'orderNo', 'permission', 'hidden', 'type', 'status', 'remark'))
+
             }
-          }, 0)
         })
       })
-      this.modalProp.title = titles[1]
-      this.modalProp.btnIcon = icons[1]
-      this.visible = true
+
     },
     trimInput(e) {
       return e.target.value.trim()
@@ -367,12 +406,22 @@ export default {
       })
       this.visible = true
     },
+    formatUrl() {
+      if (this.permissionUrl.url && this.permissionUrl.url.trim() && !this.permissionUrl.url.trim().startsWith('/')) {
+        this.permissionUrl.url = '/' + this.permissionUrl.url.trim()
+      }
+    },
     close() {
       this.visible = false
       this.parentTreeDisabled = false
       this.id = null
       this.form.resetFields()
       this.currentMenuType = 'F'
+      this.permissionUrl = {
+        service: undefined,
+        method: undefined,
+        url: ''
+      }
     },
 
     handleOk() {
@@ -383,6 +432,7 @@ export default {
         if (!err) {
           values.id = this.id
           _this.confirmLoading = true
+          values.permissionUrl = this.permissionUrlHelp
           if (values.id) {
             edit(values).then(resp => {
               if (resp.code === 200) {
@@ -419,8 +469,6 @@ export default {
       this.close()
     }
   },
-  watch: {
-
-  }
+  watch: {}
 }
 </script>
