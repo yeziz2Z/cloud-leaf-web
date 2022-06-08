@@ -32,9 +32,9 @@
                 :replace-fields="{children:'children',title:'title',key:'key',value:'key'}"
                 placeholder="请选择机构"
               >
-<!--                <template #title="{ key, value }">
-                  <span style="color: #08c" v-if="key === '0-0-1'">Child Node1 {{ value }}</span>
-                </template>-->
+                <!--                <template #title="{ key, value }">
+                                  <span style="color: #08c" v-if="key === '0-0-1'">Child Node1 {{ value }}</span>
+                                </template>-->
               </a-tree-select>
             </a-form-item>
           </a-col>
@@ -143,6 +143,7 @@
 <script>
 import {TreeSelect} from 'ant-design-vue'
 import {add, edit, getUserById} from '@/api/system/user'
+import {dictDataOptions} from '@/api/system/dict'
 
 const icons = ['plus-circle', 'check-circle'];
 const titles = ['新增', '编辑', '查看'];
@@ -163,13 +164,16 @@ export default {
         btnIcon: '',
         footVisible: true
       },
-      genderOptions: [{label: '男', value: '0'}, {label: '女', value: '1'}, {label: '未知', value: '2'}],
+      genderOptions: [],
       id: null,
     }
   },
   beforeCreate() {
     this.form = this.$form.createForm(this)
     this.form.getFieldDecorator('keys', {})
+    dictDataOptions('sys_user_sex').then((res) => {
+      this.genderOptions = res.data
+    })
   },
   created() {
   },
