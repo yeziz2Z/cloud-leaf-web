@@ -88,6 +88,7 @@
 
 <script>
 import {add, edit, getClientById, checkClientId} from '@/api/system/oauthClients'
+import {dictDataOptions} from '@/api/system/dict'
 import pick from "lodash.pick";
 
 const icons = ['plus-circle', 'check-circle'];
@@ -101,14 +102,7 @@ export default {
       visible: false,
       confirmLoading: false,
       mdl: {},
-      authorizedGrantTypesOptions: [
-        {label: '密码模式', value: 'password'},
-        {label: '授权码模式', value: 'authorization_code'},
-        {label: '客户端模式', value: 'client_credentials'},
-        {label: '刷新模式', value: 'refresh_token'},
-        {label: '验证码模式', value: 'captcha'},
-        {label: '简化模式', value: 'implicit'},
-      ],
+      authorizedGrantTypesOptions: [],
       modalProp: {
         title: '',
         btnIcon: '',
@@ -126,10 +120,10 @@ export default {
               {required: true, message: '请输入客户端ID', whitespace: true},
               {
                 validator: (rule, value, callback) => {
-                  if (!value){
+                  if (!value) {
                     return
                   }
-                  this.checkClientId(value,callback)
+                  this.checkClientId(value, callback)
                 },
                 message: '客户端Id已存在'
               }],
@@ -196,6 +190,13 @@ export default {
     }
   },
   beforeCreate() {
+
+    dictDataOptions('grant_type').then(res =>{
+      this.authorizedGrantTypesOptions = res.data
+    }).catch(err =>{
+      this.authorizedGrantTypesOptions = []
+    })
+
     this.form = this.$form.createForm(this)
   },
   created() {
@@ -253,7 +254,7 @@ export default {
       checkClientId({id: this.id, clientId: clientId}).then(res => {
         if (res.code === 200) {
           callback()
-        }else {
+        } else {
           callback(res.msg)
         }
       })

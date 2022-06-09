@@ -56,7 +56,7 @@
 
 <script>
 import pick from 'lodash.pick'
-import {addDictType, editDictType, getDictTypeById} from '@/api/system/dict'
+import {addDictType, editDictType, getDictTypeById,dictDataOptions} from '@/api/system/dict'
 
 export default {
   name: 'DictTypeModal',
@@ -76,8 +76,13 @@ export default {
       mdl: {},
       id: null,
       form: this.$form.createForm(this),
-      statusOptions: [{label: '正常', value: '1'}, {label: '停用', value: '0'}],
+      statusOptions: [],
     }
+  },
+  beforeCreate() {
+    dictDataOptions('sys_status').then(res =>{
+      this.statusOptions = res.data
+    })
   },
   created () {
   },

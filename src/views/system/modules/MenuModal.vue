@@ -48,7 +48,7 @@
         <a-row>
           <a-col span="12">
             <a-form-item label="类 型" :label-col="layout.labelCol" :wrapper-col="layout.wrapperCol">
-              <a-radio-group v-decorator="menuForm.type" :options="genderOptions">
+              <a-radio-group v-decorator="menuForm.type" :options="menuTypeOptions">
               </a-radio-group>
             </a-form-item>
           </a-col>
@@ -220,6 +220,7 @@
 import {TreeSelect} from 'ant-design-vue'
 import IconSelector from '@/components/IconSelector'
 import {add, edit, getMenuById} from '@/api/system/menu'
+import {dictDataOptions} from '@/api/system/dict'
 import pick from 'lodash.pick'
 
 const icons = ['plus-circle', 'check-circle'];
@@ -249,12 +250,9 @@ export default {
       },
       currentMenuType: 'F',
       // todo 替换为 字典值
-      genderOptions: [{label: '目录', value: 'F'}, {label: '菜单', value: 'M'}, {label: '按钮', value: 'B'}],
-      servicesOptions: [{label: '系统服务', value: 'cloud-leaf-admin'}, {label: '博客服务', value: 'cloud-leaf-blog'}],
-      requestMethodOptions: [{label: '不限', value: '*'}, {label: 'GET', value: 'GET'}, {
-        label: 'POST',
-        value: 'POST'
-      }, {label: 'PUT', value: 'PUT'}, {label: 'DELETE', value: 'DELETE'}, {label: 'PATCH', value: 'PATCH'}],
+      menuTypeOptions: [],
+      servicesOptions: [],
+      requestMethodOptions: [],
       id: null,
       parentTreeDisabled: false,
       layout: {
@@ -349,6 +347,22 @@ export default {
     }
   },
   beforeCreate() {
+    dictDataOptions('request_method').then(res =>{
+      this.requestMethodOptions = res.data
+    }).catch(err =>{
+      this.requestMethodOptions=[]
+    })
+    dictDataOptions('service_enums').then(res =>{
+      this.servicesOptions = res.data
+    }).catch(err =>{
+      this.servicesOptions=[]
+    })
+    dictDataOptions('sys_menu_type').then(res =>{
+      this.menuTypeOptions = res.data
+    }).catch(err =>{
+      this.menuTypeOptions=[]
+    })
+
     this.form = this.$form.createForm(this)
   },
   created() {
@@ -378,21 +392,21 @@ export default {
         let type = resp.data.type
         this.currentMenuType = type
         this.$nextTick(() => {
-            if ('F' === type) {
-              this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'redirect', 'orderNo', 'hidden', 'hideChildrenInMenu', 'type', 'hiddenHeaderContent', 'status', 'remark'))
-            } else if ('M' === type) {
-              this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'type', 'component', 'path', 'orderNo', 'permission', 'hidden', 'keepAlive', 'newWindow', 'status', 'remark'))
-            } else {
-              if (resp.data.permissionUrl){
-                let pArr = resp.data.permissionUrl.split(':/')
-                this.permissionUrl.method = pArr[0]
-                const idx = pArr[1].indexOf('/')
-                this.permissionUrl.service = pArr[1].substring(0,idx)
-                this.permissionUrl.url = pArr[1].substring(idx)
-              }
-              this.form.setFieldsValue(pick(resp.data, 'title', 'parentId', 'orderNo', 'permission', 'hidden', 'type', 'status', 'remark'))
-
+          if ('F' === type) {
+            this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'redirect', 'orderNo', 'hidden', 'hideChildrenInMenu', 'type', 'hiddenHeaderContent', 'status', 'remark'))
+          } else if ('M' === type) {
+            this.form.setFieldsValue(pick(resp.data, 'title', 'name', 'parentId', 'icon', 'type', 'component', 'path', 'orderNo', 'permission', 'hidden', 'keepAlive', 'newWindow', 'status', 'remark'))
+          } else {
+            if (resp.data.permissionUrl) {
+              let pArr = resp.data.permissionUrl.split(':/')
+              this.permissionUrl.method = pArr[0]
+              const idx = pArr[1].indexOf('/')
+              this.permissionUrl.service = pArr[1].substring(0, idx)
+              this.permissionUrl.url = pArr[1].substring(idx)
             }
+            this.form.setFieldsValue(pick(resp.data, 'title', 'parentId', 'orderNo', 'permission', 'hidden', 'type', 'status', 'remark'))
+
+          }
         })
       })
 

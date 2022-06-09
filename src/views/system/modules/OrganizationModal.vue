@@ -85,6 +85,7 @@
 <script>
 import {TreeSelect} from 'ant-design-vue'
 import {add, edit, getOrganizationById} from '@/api/system/org'
+import {dictDataOptions} from '@/api/system/dict'
 import pick from 'lodash.pick'
 import clonedeep from 'lodash.clonedeep'
 
@@ -108,7 +109,7 @@ export default {
       id: null,
       parentTreeDisabled: false,
       isTopOrganization: false,
-      statusOptions: [{label: '启用', value: '1'}, {label: '停用', value: '0'}],
+      statusOptions: [],
       layout: {
         labelCol: {span: 6},
         wrapperCol: {span: 18}
@@ -175,6 +176,9 @@ export default {
   },
   computed: {},
   beforeCreate() {
+    dictDataOptions('sys_status').then(res =>{
+      this.statusOptions = res.data
+    })
     this.form = this.$form.createForm(this)
   },
   created() {

@@ -66,6 +66,7 @@
 <script>
 import pick from 'lodash.pick'
 import {add, edit, getRoleById} from '@/api/system/role'
+import {dictDataOptions} from "@/api/system/dict";
 
 export default {
   name: 'RoleModal',
@@ -85,8 +86,13 @@ export default {
       mdl: {},
       id: null,
       form: this.$form.createForm(this),
-      statusOptions: [{label: '正常', value: '1'}, {label: '停用', value: '0'}],
+      statusOptions: [],
     }
+  },
+  beforeCreate() {
+    dictDataOptions('sys_status').then(res =>{
+      this.statusOptions = res.data
+    })
   },
   created () {
   },
