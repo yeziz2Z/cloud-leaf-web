@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 
 const userApi = {
-  Login: '/cloud-leaf-oauth2/oauth/token',
+  Login: '/cloud-leaf-oauth2/oauth2/token',
   Captcha: '/captcha',
   Logout: '/cloud-leaf-oauth2/oauth/logout',
   ForgePassword: '/auth/forge-password',
@@ -40,7 +40,7 @@ export function login(parameter) {
     method: 'post',
     params: parameter,
     headers: {
-      Authorization: 'Basic Y2xvdWQtbGVhZi1hZG1pbjo4ODk1Mjc='
+      Authorization: 'Basic Y2xvdWQtbGVhZi1hZG1pbjoxMjM0NTY='
     },
   })
 }
