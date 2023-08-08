@@ -8,7 +8,6 @@
         </a-card>
       </a-col>
 
-
       <a-col :span="19">
         <a-card>
           <div class="table-page-search-wrapper">
@@ -36,10 +35,14 @@
                 <a-col :md="8" :sm="24"></a-col>
                 <a-col :md="8" :sm="24"></a-col>
                 <a-col :md="8" :sm="24">
-                  <span class="table-page-search-submitButtons"
-                        :style=" { float: 'right', overflow: 'hidden' }  ">
-                    <a-button type="primary" icon="search" v-permission="'system.user.list'"
-                              @click="refresh">查询</a-button>
+                  <span
+                    class="table-page-search-submitButtons"
+                    :style=" { float: 'right', overflow: 'hidden' } ">
+                    <a-button
+                      type="primary"
+                      icon="search"
+                      v-permission="'system.user.list'"
+                      @click="refresh">查询</a-button>
                     <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
 
                   </span>
@@ -54,8 +57,12 @@
               编辑
             </a-button>
             <a-button icon="eye" :disabled="ids.length !== 1" @click="handleView">查看</a-button>
-            <a-button type="danger" :disabled="ids.length === 0" v-permission="'system.user.delete'" icon="delete"
-                      @click="handleDelete">删除
+            <a-button
+              type="danger"
+              :disabled="ids.length === 0"
+              v-permission="'system.user.delete'"
+              icon="delete"
+              @click="handleDelete">删除
             </a-button>
 
           </div>
@@ -66,15 +73,15 @@
             :data="getUserList"
             :alert="false"
             :pagination="{ showTotal: total => `共 ${total} 条` }"
-            :showPagination='true'
-            :rowKey='record => record.id'
+            :showPagination="true"
+            :rowKey="record => record.id"
             :rowSelection="{ selectedRowKeys: ids, onChange: onSelectChange }"
           >
 
             <span slot="roles" slot-scope="text,record">
               <a-tag v-for="(role) in text " :color="colors[Math.floor(Math.random()*6)]" :key="role.id">{{
-                  role.name
-                }}</a-tag>
+                role.name
+              }}</a-tag>
             </span>
             <span slot="status" slot-scope="text, record">
               <a-popconfirm
@@ -88,25 +95,25 @@
               </a-popconfirm>
             </span>
             <span slot="action" slot-scope="text, record">
-            <template>
-              <a @click="handleEdit(record)">编辑</a>
-              <a-divider type="vertical"/>
-            </template>
-            <a-dropdown>
-              <a class="ant-dropdown-link">
-                更多 <a-icon type="down"/>
-              </a>
-              <a-menu slot="overlay">
+              <template>
+                <a @click="handleEdit(record)">编辑</a>
+                <a-divider type="vertical"/>
+              </template>
+              <a-dropdown>
+                <a class="ant-dropdown-link">
+                  更多 <a-icon type="down"/>
+                </a>
+                <a-menu slot="overlay">
 
-                <a-menu-item>
-                  <a href="javascript:;">重置密码</a>
-                </a-menu-item>
-                <a-menu-item>
-                  <a @click="handleDelete(record)" v-permission="'system.user.delete'">删除</a>
-                </a-menu-item>
-              </a-menu>
-            </a-dropdown>
-          </span>
+                  <a-menu-item>
+                    <a href="javascript:;">重置密码</a>
+                  </a-menu-item>
+                  <a-menu-item>
+                    <a @click="handleDelete(record)" v-permission="'system.user.delete'">删除</a>
+                  </a-menu-item>
+                </a-menu>
+              </a-dropdown>
+            </span>
           </s-table>
         </a-card>
       </a-col>
@@ -117,12 +124,12 @@
 </template>
 
 <script>
-import {STable} from '@/components'
+import { STable } from '@/components'
 import UserModal from './modules/UserModal'
-import {getOrgTree} from '@/api/system/org'
-import {list, remove} from '@/api/system/user'
-import {getRoles} from '@/api/system/role'
-import {Tree} from 'ant-design-vue'
+import { getOrgTree } from '@/api/system/org'
+import { list, remove } from '@/api/system/user'
+import { getRoles } from '@/api/system/role'
+import { Tree } from 'ant-design-vue'
 
 export default {
   name: 'User',
@@ -132,7 +139,7 @@ export default {
     UserModal,
     ATree: Tree
   },
-  data() {
+  data () {
     return {
       // 查询参数
       queryParam: {},
@@ -146,32 +153,32 @@ export default {
           title: '用户姓名',
           dataIndex: 'nickName',
           sorter: true,
-          needTotal: true,
+          needTotal: true
         },
         {
           title: '角色',
           dataIndex: 'roles',
-          scopedSlots: {customRender: 'roles'}
+          scopedSlots: { customRender: 'roles' }
         },
         {
           title: '部门',
-          dataIndex: 'organization.name',
+          dataIndex: 'organization.name'
         },
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: {customRender: 'status'}
+          scopedSlots: { customRender: 'status' }
         },
-        /*{
+        /* {
           title: '手机号',
           dataIndex: 'mobilePhone',
           sorter: true
-        },*/
+        }, */
         {
           title: '操作',
           dataIndex: 'action',
           width: '150px',
-          scopedSlots: {customRender: 'action'}
+          scopedSlots: { customRender: 'action' }
         }
       ],
       orgTree: [],
@@ -181,32 +188,32 @@ export default {
       colors: ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple']
     }
   },
-  created() {
+  created () {
     getOrgTree().then(res => {
       this.orgTree = res.data
     })
     getRoles().then(res => {
       this.roleOptions = res.data.map((role, idx) => {
-        return {label: role.name, value: role.id}
+        return { label: role.name, value: role.id }
       })
     })
   },
   methods: {
-    handleClick(key, e) {
+    handleClick (key, e) {
       console.log(e)
       this.queryParam.orgId = key.length ? key[0] : null
       this.refresh()
     },
-    refresh() {
+    refresh () {
       this.$refs.table.refresh(true)
     },
-    resetPassword() {
+    resetPassword () {
 
     },
 
-    getUserList(parameter) {
+    getUserList (parameter) {
       if (!parameter) {
-        let page = this.$refs.table.localPagination
+        const page = this.$refs.table.localPagination
         parameter = {
           current: page.current,
           size: page.pageSize
@@ -215,30 +222,32 @@ export default {
       return list(Object.assign(parameter, this.queryParam))
         .then(res => {
           return res.data
+        }).finally(() =>{
+          this.clearSelected()
         })
     },
-    confirmHandleStatus(row) {
+    confirmHandleStatus (row) {
 
     },
-    cancelHandleStatus(row) {
+    cancelHandleStatus (row) {
 
     },
-    handleAdd(item) {
+    handleAdd (item) {
       this.$refs.modal.add(item.key)
     },
-    handleEdit(record) {
+    handleEdit (record) {
       this.$refs.modal.edit(record.id || this.ids[0])
     },
-    handleView(record) {
+    handleView (record) {
       this.$refs.modal.view(record.id || this.ids[0])
     },
-    handleDelete(record) {
+    handleDelete (record) {
       const userIds = record.id || this.ids
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + userIds + '的数据',
-        onOk() {
+        onOk () {
           return remove(userIds)
             .then(resp => {
               if (resp.code === 200) {
@@ -247,14 +256,13 @@ export default {
               } else {
                 _this.$message.error(resp.msg)
               }
-
             })
         },
-        onCancel() {
+        onCancel () {
         }
       })
 
-      /*remove(userIds).then(resp => {
+      /* remove(userIds).then(resp => {
         if (resp.code === 200) {
           this.$message.success('删除成功')
           this.refresh()
@@ -263,20 +271,23 @@ export default {
         }
       }).catch(err => {
         this.$message.error(err)
-      })*/
+      }) */
     },
-    handleTitleClick(item) {
+    handleTitleClick (item) {
     },
-    titleClick(e) {
+    titleClick (e) {
     },
-    handleSaveOk() {
+    handleSaveOk () {
       this.ids = []
       this.refresh()
     },
-    handleSaveClose(e) {
+    handleSaveClose (e) {
     },
-
-    onSelectChange(ids, selectedRows) {
+    clearSelected () {
+      this.ids = []
+      this.selectedRows = []
+    },
+    onSelectChange (ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
     }

@@ -64,7 +64,7 @@
 
 <script>
 import pick from 'lodash.pick'
-import {addDictData, editDictData, getDictDataById,dictDataOptions} from '@/api/system/dict'
+import { addDictData, editDictData, getDictDataById, dictDataOptions } from '@/api/system/dict'
 
 export default {
   name: 'DictDataModal',
@@ -87,7 +87,7 @@ export default {
       statusOptions: [],
     }
   },
-  beforeCreate() {
+  beforeCreate () {
     dictDataOptions('sys_status').then(res =>{
       this.statusOptions = res.data
     })
@@ -98,7 +98,7 @@ export default {
     add(type) {
       this.visible = true
       this.$nextTick(() => {
-        this.form.setFieldsValue({type: type})
+        this.form.setFieldsValue({ type: type })
       })
     },
     edit(id) {

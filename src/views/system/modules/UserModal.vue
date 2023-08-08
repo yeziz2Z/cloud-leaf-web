@@ -8,17 +8,17 @@
     @cancel="handleCancel"
   >
     <a-spin :spinning="confirmLoading">
-      <a-form :form="form" disabled="true">
+      <a-form :form="form" >
         <a-row>
           <a-col span="12">
             <a-form-item label="用户昵称" :label-col="{span:6}" :wrapper-col="{span:16}">
               <a-input
                 v-decorator="['nickName',
-                {rules:[{required:true,message:'请输入用户昵称',whitespace:true}],
-                getValueFromEvent: e =>{ return e.target.value.trim()},
-                trigger:'blur',
-                validateTrigger:'blur'
-                }]"/>
+                              {rules:[{required:true,message:'请输入用户昵称',whitespace:true}],
+                               getValueFromEvent: e =>{ return e.target.value.trim()},
+                               trigger:'blur',
+                               validateTrigger:'blur'
+                              }]"/>
             </a-form-item>
           </a-col>
           <a-col span="12">
@@ -42,17 +42,18 @@
         <a-row>
           <a-col :span="12">
             <a-form-item label="手机号码" :label-col="{span:6}" :wrapper-col="{span:16}">
-              <a-input v-decorator="['mobilePhone',
-               {rules:
-                 [
-                   {required:true,message:'请输入手机号'},
-                   {pattern:/^1[3|4|5|7|8]\d{9}$/,message:'请输入正确格式手机号!'},
-                 ],
-                trigger:'blur',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-               }
-               ]"/>
+              <a-input
+                v-decorator="['mobilePhone',
+                              {rules:
+                                 [
+                                   {required:true,message:'请输入手机号'},
+                                   {pattern:/^1[3|4|5|7|8]\d{9}$/,message:'请输入正确格式手机号!'},
+                                 ],
+                               trigger:'blur',
+                               validateTrigger:'blur',
+                               getValueFromEvent: e =>{ return e.target.value.trim()}
+                              }
+                ]"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
@@ -64,31 +65,33 @@
         <a-row v-show="id === null">
           <a-col :span="12">
             <a-form-item label="用户名称" :label-col="{span:6}" :wrapper-col="{span:16}">
-              <a-input v-decorator="['username',
-              {
-                rules:[
-                  {required:true,message:'请输入用户名称'},
-                  {min:4,message:'最小长度为4'},
-                  {max:12,message:'最大长度为12'},
-                  ],
-                trigger:'blur',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-              }]"/>
+              <a-input
+                v-decorator="['username',
+                              {
+                                rules:[
+                                  {required:true,message:'请输入用户名称'},
+                                  {min:4,message:'最小长度为4'},
+                                  {max:12,message:'最大长度为12'},
+                                ],
+                                trigger:'blur',
+                                validateTrigger:'blur',
+                                getValueFromEvent: e =>{ return e.target.value.trim()}
+                              }]"/>
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="密 码" :label-col="{span:4,offset:2}" :wrapper-col="{span:16}">
-              <a-input-password v-decorator="['password',
-              {
-                rules:
-                [
-                  {required:id === null,message:'请输入密码'}
-                ],
-                trigger:'blur',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-              }]"/>
+              <a-input-password
+                v-decorator="['password',
+                              {
+                                rules:
+                                  [
+                                    {required:id === null,message:'请输入密码'}
+                                  ],
+                                trigger:'blur',
+                                validateTrigger:'blur',
+                                getValueFromEvent: e =>{ return e.target.value.trim()}
+                              }]"/>
             </a-form-item>
           </a-col>
 
@@ -104,7 +107,7 @@
           </a-col>
           <a-col :span="12">
             <a-form-item label="状 态" :label-col="{span:6}" :wrapper-col="{span:16}">
-              <a-switch v-decorator="['status', {valuePropName:'checked'}]"/>
+              <a-switch v-decorator="['status', {valuePropName:'checked',initialValue : true}]"/>
             </a-form-item>
 
           </a-col>
@@ -112,13 +115,14 @@
         <a-row>
           <a-col :span="24">
             <a-form-item label="备 注" :label-col="{span:3}" :wrapper-col="{span:20}">
-              <a-textarea v-decorator="['remark',
-              {
-                rules:[{max:100,message:'长度限制100'}],
-                trigger:'blur',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-              }]"/>
+              <a-textarea
+                v-decorator="['remark',
+                              {
+                                rules:[{max:100,message:'长度限制100'}],
+                                trigger:'blur',
+                                validateTrigger:'blur',
+                                getValueFromEvent: e =>{ return e.target.value.trim()}
+                              }]"/>
             </a-form-item>
           </a-col>
         </a-row>
@@ -135,18 +139,18 @@
     </a-spin>
     <template #footer v-show="modalProp.footVisible">
       <a-button key="back" icon="close-circle" @click="handleCancel">取消</a-button>
-      <a-button key="submit" :icon="modalProp.btnIcon" type="primary" @click="handleOk">提交</a-button>
+      <a-button key="submit" :icon="modalProp.btnIcon" type="primary" :disabled="formReadOnly" @click="handleOk">提交</a-button>
     </template>
   </a-modal>
 </template>
 
 <script>
-import {TreeSelect} from 'ant-design-vue'
-import {add, edit, getUserById} from '@/api/system/user'
-import {dictDataOptions} from '@/api/system/dict'
+import { TreeSelect } from 'ant-design-vue'
+import { add, edit, getUserById } from '@/api/system/user'
+import { dictDataOptions } from '@/api/system/dict'
 
-const icons = ['plus-circle', 'check-circle'];
-const titles = ['新增', '编辑', '查看'];
+const icons = ['plus-circle', 'check-circle']
+const titles = ['新增', '编辑', '查看']
 
 export default {
   name: 'UserModal',
@@ -154,40 +158,43 @@ export default {
   components: {
     ATreeSelect: TreeSelect
   },
-  data() {
+  data () {
     return {
       visible: false,
       confirmLoading: false,
       mdl: {},
+      formReadOnly: false,
       modalProp: {
         title: '',
         btnIcon: '',
         footVisible: true
       },
       genderOptions: [],
-      id: null,
+      id: null
     }
   },
-  beforeCreate() {
+  beforeCreate () {
     this.form = this.$form.createForm(this)
     this.form.getFieldDecorator('keys', {})
     dictDataOptions('sys_user_sex').then((res) => {
       this.genderOptions = res.data
     })
   },
-  created() {
+  created () {
   },
   methods: {
-    add() {
+    add () {
+      this.formReadOnly = false
       this.modalProp.title = titles[0]
       this.modalProp.btnIcon = icons[0]
       this.modalProp.footVisible = true
       this.visible = true
     },
-    edit(id) {
+    edit (id) {
       this.id = id
+      this.formReadOnly = false
       getUserById(id).then(res => {
-        let formVal = res.data
+        const formVal = res.data
 
         this.$nextTick(() => {
           // TODO 表单无法正常回显  需要加一个定时任务
@@ -213,23 +220,39 @@ export default {
         this.modalProp.footVisible = true
         this.visible = true
       })
-
     },
-    view(id) {
+    view (id) {
       this.modalProp.title = titles[2]
-      this.$nextTick(() => {
-        this.modalProp.footVisible = false
+      this.formReadOnly = true
+      getUserById(id).then(res => {
+        const formVal = res.data
+        this.$nextTick(() => {
+            this.form.setFieldsValue({
+              nickName: formVal.nickName,
+              orgId: formVal.organization.id,
+              mobilePhone: formVal.mobilePhone,
+              email: formVal.email,
+              username: formVal.username,
+              // password: formVal.password,
+              gender: formVal.gender,
+              status: formVal.status,
+              remark: formVal.remark,
+              roleIds: formVal.roles.map((key) => {
+                return key.id
+              })
+            })
+        })
       })
       this.visible = true
     },
-    close() {
+    close () {
       this.$emit('close')
       this.visible = false
       this.id = null
       this.form.resetFields()
     },
 
-    handleOk() {
+    handleOk () {
       const _this = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
@@ -259,28 +282,28 @@ export default {
                 _this.$message.success('添加成功')
                 _this.$emit('ok')
                 _this.close()
+              } else {
+                _this.$message.error(resp.msg)
               }
-
             }).catch(err => {
-              _this.$message.error(resp.msg)
+              _this.$message.error(err)
             }).finally(() => {
               _this.confirmLoading = false
             })
           }
-
         }
       })
     },
-    handleCancel() {
+    handleCancel () {
       this.close()
     }
   },
   watch: {
-    /*id: function (id) {
+    /* id: function (id) {
       this.$nextTick(() => {
         this.form.validateFields(['password'], {force: true});
       })
-    }*/
+    } */
   }
 }
 </script>

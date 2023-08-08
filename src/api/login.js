@@ -41,7 +41,7 @@ export function login(parameter) {
     params: parameter,
     headers: {
       Authorization: 'Basic Y2xvdWQtbGVhZi1hZG1pbjoxMjM0NTY='
-    },
+    }
   })
 }
 
