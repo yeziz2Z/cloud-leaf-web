@@ -107,7 +107,9 @@ export default {
         {
           title: '操作类型',
           dataIndex: 'businessType',
-          customRender: (type) => this.businessTypeOptions.find((item)=>{return item.value === type}).label
+          customRender: (type) => this.businessTypeOptions.find((item) => {
+            return item.value === type
+          }).label
         },
         {
           title: '请求方式',

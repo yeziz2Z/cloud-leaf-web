@@ -43,7 +43,10 @@
       :rowSelection="{ selectedRowKeys: ids, onChange: onSelectChange }"
     >
 
-        <span slot="action" slot-scope="text, record">
+      <span slot="status" slot-scope="text, record">
+          <a-tag :color="text?'green':'red'">{{ text ? '正常' : '停用' }}</a-tag>
+        </span>
+      <span slot="action" slot-scope="text, record">
             <template>
               <span v-permission="'system.role.edit'">
                  <a @click="handleEdit(record)">
@@ -104,7 +107,8 @@ export default {
         },
         {
           title: '状态',
-          dataIndex: 'status'
+          dataIndex: 'status',
+          scopedSlots: {customRender: 'status'}
         },
         {
           title: '创建时间',
