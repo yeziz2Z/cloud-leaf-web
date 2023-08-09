@@ -41,7 +41,7 @@ const user = {
     Login({commit}, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
-          if (response.code == 200) {
+          if (response.code === 200) {
             const result = response.data
             storage.set(ACCESS_TOKEN, result.token_type + ' ' + result.access_token)
             storage.set(REFRESH_TOKEN, result.refresh_token)

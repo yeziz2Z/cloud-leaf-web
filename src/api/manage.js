@@ -16,7 +16,7 @@ export function getUserList (parameter) {
   return request({
     url: api.user,
     method: 'get',
-    params: parameter``
+    params: parameter
   })
 }
 

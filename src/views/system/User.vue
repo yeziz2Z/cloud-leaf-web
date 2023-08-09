@@ -80,8 +80,8 @@
 
             <span slot="roles" slot-scope="text,record">
               <a-tag v-for="(role) in text " :color="colors[Math.floor(Math.random()*6)]" :key="role.id">{{
-                role.name
-              }}</a-tag>
+                  role.name
+                }}</a-tag>
             </span>
             <span slot="status" slot-scope="text, record">
               <a-popconfirm
@@ -126,26 +126,31 @@
       :confirmLoading="resetPwd.confirmLoading"
       @ok="handlerRestModalOk"
       @cancel="handlerRestModalCancel">
-      <a-form :resetPwdForm = "resetPwd.form">
+      <a-form :form="resetPwd.form">
+
+        <p>请输入用户「{{ resetPwd.username }}」的新密码</p>
         <a-popover
           placement="rightTop"
           :trigger="['focus']"
           :getPopupContainer="(trigger) => trigger.parentElement"
           v-model="resetPwd.state.passwordLevelChecked">
           <template slot="content">
-            <div :style="{ width: '200px' }" >
-              <div :class="['user-register', passwordLevelClass]">{{ $t(passwordLevelName) }}</div>
-              <a-progress :percent="resetPwd.state.percent" :showInfo="false" :strokeColor=" passwordLevelColor " />
+            <div :style="{ width: '200px' }">
+              <div :class="['reset-password', passwordLevelClass]">{{ passwordLevelName }}</div>
+              <a-progress :percent="resetPwd.state.percent" :showInfo="false" :strokeColor=" passwordLevelColor "/>
               <div style="margin-top: 10px;">
-              <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
+                <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
               </div>
             </div>
           </template>
           <a-form-item>
             <a-input-password
-              @click="handlePasswordInputClick"
+              :maxLength="16"
+              @click="() => this.resetPwd.state.passwordLevelChecked = true"
               placeholder="请至少输入 6 个字符。请不要使用容易被猜到的密码。"
-              v-decorator="['password', {rules: [{ required: true, message: '请输入密码！' }, { validator: this.handlePasswordLevel }], validateTrigger: ['change', 'blur']}]"
+              v-decorator="['password', {rules: [{ required: true, message: '请输入密码！' },
+              { validator: this.handlePasswordLevel }],
+                validateTrigger: ['change', 'blur']}]"
             ></a-input-password>
           </a-form-item>
         </a-popover>
@@ -156,13 +161,13 @@
 </template>
 
 <script>
-import { STable } from '@/components'
+import {STable} from '@/components'
 import UserModal from './modules/UserModal'
-import { getOrgTree } from '@/api/system/org'
-import { list, remove } from '@/api/system/user'
-import { getRoles } from '@/api/system/role'
-import { Tree } from 'ant-design-vue'
-import { scorePassword } from '@/utils/util'
+import {getOrgTree} from '@/api/system/org'
+import {list, remove, resetPassword} from '@/api/system/user'
+import {getRoles} from '@/api/system/role'
+import {Tree} from 'ant-design-vue'
+import {scorePassword} from '@/utils/util'
 
 const levelNames = {
   0: '强度：太短',
@@ -191,7 +196,7 @@ export default {
     UserModal,
     ATree: Tree
   },
-  data () {
+  data() {
     return {
       // 查询参数
       queryParam: {},
@@ -210,7 +215,7 @@ export default {
         {
           title: '角色',
           dataIndex: 'roles',
-          scopedSlots: { customRender: 'roles' }
+          scopedSlots: {customRender: 'roles'}
         },
         {
           title: '部门',
@@ -219,7 +224,7 @@ export default {
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: { customRender: 'status' }
+          scopedSlots: {customRender: 'status'}
         },
         /* {
           title: '手机号',
@@ -230,7 +235,7 @@ export default {
           title: '操作',
           dataIndex: 'action',
           width: '150px',
-          scopedSlots: { customRender: 'action' }
+          scopedSlots: {customRender: 'action'}
         }
       ],
       orgTree: [],
@@ -242,7 +247,8 @@ export default {
         form: this.$form.createForm(this),
         visible: false,
         confirmLoading: false,
-        id: null,
+        userId: null,
+        username: '',
         state: {
           level: 0,
           passwordLevel: 0,
@@ -254,74 +260,65 @@ export default {
     }
   },
   computed: {
-    passwordLevelClass () {
+    passwordLevelClass() {
       return levelClass[this.resetPwd.state.passwordLevel]
     },
-    passwordLevelName () {
+    passwordLevelName() {
       return levelNames[this.resetPwd.state.passwordLevel]
     },
-    passwordLevelColor () {
+    passwordLevelColor() {
       return levelColor[this.resetPwd.state.passwordLevel]
     }
   },
-  created () {
-    console.log(this.$form)
+  created() {
     getOrgTree().then(res => {
       this.orgTree = res.data
     })
     getRoles().then(res => {
       this.roleOptions = res.data.map((role, idx) => {
-        return { label: role.name, value: role.id }
+        return {label: role.name, value: role.id}
       })
     })
   },
   methods: {
-    handleClick (key, e) {
+    handleClick(key, e) {
       console.log(e)
       this.queryParam.orgId = key.length ? key[0] : null
       this.refresh()
     },
-    refresh () {
+    refresh() {
       this.$refs.table.refresh(true)
     },
-    handleResetPassword (record) {
+    handleResetPassword(record) {
+      this.resetPwd.userId = record.id
+      this.resetPwd.username = record.username
       this.resetPwd.visible = true
     },
-    handlePasswordLevel (rule, value, callback) {
-
-      console.log(rule, value, callback)
+    handlePasswordLevel(rule, value, callback) {
       if (value === '') {
         return callback()
       }
-      console.log('scorePassword ; ', scorePassword(value))
       if (value.length >= 6) {
-        if (scorePassword(value) >= 30) {
+        let score = scorePassword(value)
+        if (score >= 30) {
           this.resetPwd.state.level = 1
         }
-        if (scorePassword(value) >= 60) {
+        if (score >= 60) {
           this.resetPwd.state.level = 2
         }
-        if (scorePassword(value) >= 80) {
+        if (score >= 80) {
           this.resetPwd.state.level = 3
         }
       } else {
         this.resetPwd.state.level = 0
         callback(new Error('密码强度不够'))
       }
-      this.resetPwd.state.passwordLevel = this.state.level
-      this.resetPwd.state.percent = this.state.level * 33
+      this.resetPwd.state.passwordLevel = this.resetPwd.state.level
+      this.resetPwd.state.percent = this.resetPwd.state.level * 33
 
       callback()
     },
-
-    handlePasswordInputClick () {
-      if (!this.isMobile) {
-        this.resetPwd.state.passwordLevelChecked = true
-        return
-      }
-      this.resetPwd.state.passwordLevelChecked = false
-    },
-    getUserList (parameter) {
+    getUserList(parameter) {
       if (!parameter) {
         const page = this.$refs.table.localPagination
         parameter = {
@@ -336,28 +333,28 @@ export default {
           this.clearSelected()
         })
     },
-    confirmHandleStatus (row) {
-
+    confirmHandleStatus(row) {
+      console.log("确认")
     },
-    cancelHandleStatus (row) {
-
+    cancelHandleStatus(row) {
+      console.log("取消")
     },
-    handleAdd (item) {
+    handleAdd(item) {
       this.$refs.modal.add(item.key)
     },
-    handleEdit (record) {
+    handleEdit(record) {
       this.$refs.modal.edit(record.id || this.ids[0])
     },
-    handleView (record) {
+    handleView(record) {
       this.$refs.modal.view(record.id || this.ids[0])
     },
-    handleDelete (record) {
+    handleDelete(record) {
       const userIds = record.id || this.ids
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + userIds + '的数据',
-        onOk () {
+        onOk() {
           return remove(userIds)
             .then(resp => {
               if (resp.code === 200) {
@@ -368,7 +365,7 @@ export default {
               }
             })
         },
-        onCancel () {
+        onCancel() {
         }
       })
 
@@ -383,38 +380,86 @@ export default {
         this.$message.error(err)
       }) */
     },
-    handleTitleClick (item) {
+    handleTitleClick(item) {
     },
-    titleClick (e) {
+    titleClick(e) {
     },
-    handleSaveOk () {
+    handleSaveOk() {
       this.ids = []
       this.refresh()
     },
-    handleSaveClose (e) {
+    handleSaveClose(e) {
     },
-    clearSelected () {
+    clearSelected() {
       this.ids = []
       this.selectedRows = []
     },
-    onSelectChange (ids, selectedRows) {
+    onSelectChange(ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
     },
-    handlerRestModalOk () {
+    handlerRestModalOk() {
+      // 触发表单验证
+      this.resetPwd.form.validateFields((err, values) => {
+        // 验证表单没错误
+        if (!err) {
+          values.userId = this.resetPwd.userId
+          console.log('form values', values)
 
+          this.resetPwd.confirmLoading = true
+          resetPassword(values).then(resp => {
+            if (resp.code === 200) {
+              this.$message.success('修改成功')
+              this.handlerRestModalCancel()
+            } else {
+              this.$message.error(resp.msg)
+            }
+          }).catch(err => {
+            console.log(err)
+          }).finally(() => {
+            this.resetPwd.confirmLoading = false
+
+          })
+
+        }
+      })
     },
-    handlerRestModalCancel () {
+
+    handlerRestModalCancel() {
+      this.resetPwd.state = {
+        passwordLevelChecked: false,
+        level: 0,
+        percent: 10,
+        passwordLevel: 0,
+        progressColor: '#FF0000'
+      }
+
       this.resetPwd.visible = false
-      console.log('======================start=================')
-      console.log(this.resetPwd.form)
-      console.log('--------------------end--------------------')
+      this.resetPwd.userId = null
+      this.resetPwd.form.resetFields()
     }
   }
 }
 </script>
 
 <style lang="less">
+
+.reset-password {
+
+  &.error {
+    color: #ff0000;
+  }
+
+  &.warning {
+    color: #ff7e05;
+  }
+
+  &.success {
+    color: #52c41a;
+  }
+
+}
+
 .custom-tree {
 
   /deep/ .ant-menu-item-group-title {
