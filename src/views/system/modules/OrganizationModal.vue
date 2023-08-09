@@ -11,8 +11,11 @@
       <a-form :form="form" disabled="true">
         <a-row>
           <a-col span="24">
-            <a-form-item label="上级机构" v-show="getFormFieldValue('parentId') !== 0" :label-col="{span:3}"
-                         :wrapper-col="{span:21}">
+            <a-form-item
+              label="上级机构"
+              v-show="getFormFieldValue('parentId') !== 0"
+              :label-col="{span:3}"
+              :wrapper-col="{span:21}">
               <a-tree-select
                 v-decorator="organizationForm.parentId"
                 style="width: 100%"
@@ -83,22 +86,22 @@
 </template>
 
 <script>
-import {TreeSelect} from 'ant-design-vue'
-import {add, edit, getOrganizationById} from '@/api/system/org'
-import {dictDataOptions} from '@/api/system/dict'
+import { TreeSelect } from 'ant-design-vue'
+import { add, edit, getOrganizationById } from '@/api/system/org'
+import { dictDataOptions } from '@/api/system/dict'
 import pick from 'lodash.pick'
 import clonedeep from 'lodash.clonedeep'
 
-const icons = ['plus-circle', 'check-circle'];
-const titles = ['新增', '编辑', '查看'];
+const icons = ['plus-circle', 'check-circle']
+const titles = ['新增', '编辑', '查看']
 
 export default {
   name: 'OrganizationModal',
   props: ['organizations'],
   components: {
-    ATreeSelect: TreeSelect,
+    ATreeSelect: TreeSelect
   },
-  data() {
+  data () {
     return {
       visible: false,
       confirmLoading: false,
@@ -111,14 +114,14 @@ export default {
       isTopOrganization: false,
       statusOptions: [],
       layout: {
-        labelCol: {span: 6},
-        wrapperCol: {span: 18}
+        labelCol: { span: 6 },
+        wrapperCol: { span: 18 }
       },
       organizationForm: {
         name: ['name',
           {
             rules: [
-              {required: true, message: '请输入机构名称', whitespace: true},
+              { required: true, message: '请输入机构名称', whitespace: true },
               {
                 validator: (rule, value, callback) => {
                   if (this.isRepeatOrganizationName(value)) {
@@ -127,7 +130,7 @@ export default {
                   callback()
                 },
                 message: '组织机构名称已存在'
-              },
+              }
             ],
             getValueFromEvent: e => this.trimInput(e),
             trigger: 'blur',
@@ -142,54 +145,54 @@ export default {
           }],
         phone: ['phone',
           {
-            rules: [{pattern: /^1[3|4|5|7|8]\d{9}$/, message: '请输入正确格式手机号!'},],
+            rules: [{ pattern: /^1[3|4|5|7|8]\d{9}$/, message: '请输入正确格式手机号!' }],
             getValueFromEvent: e => this.trimInput(e),
             trigger: 'blur',
             validateTrigger: 'blur'
           }],
         email: ['email',
           {
-            rules: [{type: 'email', message: '请输入正确邮件格式'}],
+            rules: [{ type: 'email', message: '请输入正确邮件格式' }],
             getValueFromEvent: e => this.trimInput(e),
             trigger: 'blur',
             validateTrigger: 'blur'
           }],
         parentId: ['parentId',
           {
-            rules: [{required: true, message: '请选择父级机构'}],
+            rules: [{ required: true, message: '请选择父级机构' }]
           }],
         orderNo: ['orderNo',
           {
-            rules: [{required: true, message: '请输入排序'},
-            ],
+            rules: [{ required: true, message: '请输入排序' }
+            ]
           }],
-        status: ['status', {rules: [{required: true, message: '请选择组织机构状态'}],}],
+        status: ['status', { rules: [{ required: true, message: '请选择组织机构状态' }] }],
         remark: ['remark',
           {
-            rules: [{max: 100, message: '长度限制100'}],
+            rules: [{ max: 100, message: '长度限制100' }],
             trigger: 'blur',
             validateTrigger: 'blur',
-            getValueFromEvent: e => this.trimInput(e),
+            getValueFromEvent: e => this.trimInput(e)
           }]
       }
     }
   },
   computed: {},
-  beforeCreate() {
-    dictDataOptions('sys_status').then(res =>{
+  beforeCreate () {
+    dictDataOptions('sys_status').then(res => {
       this.statusOptions = res.data
     })
     this.form = this.$form.createForm(this)
   },
-  created() {
+  created () {
   },
   methods: {
-    add(parentId) {
+    add (parentId) {
       if (parentId) {
         this.$nextTick(() => {
           setTimeout(() => {
-            this.parentTreeDisabled = true;
-            this.form.setFieldsValue({parentId: parentId})
+            this.parentTreeDisabled = true
+            this.form.setFieldsValue({ parentId: parentId })
           }, 0)
         })
       }
@@ -198,20 +201,20 @@ export default {
       this.modalProp.btnIcon = icons[0]
       this.visible = true
     },
-    getFormFieldValue(name) {
+    getFormFieldValue (name) {
       return this.form.getFieldValue(name)
     },
-    isRepeatOrganizationName(value) {
-      let parentId = this.getFormFieldValue('parentId')
+    isRepeatOrganizationName (value) {
+      const parentId = this.getFormFieldValue('parentId')
       if (parentId === null) {
         return false
       }
       // 广度遍历树结构
-      let queue = clonedeep(this.organizations);
+      const queue = clonedeep(this.organizations)
       while (queue.length !== 0) {
-        const size = queue.length;
+        const size = queue.length
         for (let i = 0; i < size; i++) {
-          let org = queue.shift();
+          const org = queue.shift()
           if (parentId === org.id && org.children && org.children.some(o => {
             return value === o.name && this.id !== o.id
           })) {
@@ -224,7 +227,7 @@ export default {
       }
       return false
     },
-    edit(id) {
+    edit (id) {
       this.id = id
       this.$nextTick(() => {
         getOrganizationById(id).then(resp => {
@@ -235,22 +238,22 @@ export default {
       this.modalProp.btnIcon = icons[1]
       this.visible = true
     },
-    trimInput(e) {
+    trimInput (e) {
       return e.target.value.trim()
     },
-    view(id) {
+    view (id) {
       this.modalProp.title = titles[2]
       this.$nextTick(() => {
       })
       this.visible = true
     },
-    close() {
+    close () {
       this.visible = false
       this.id = null
       this.form.resetFields()
     },
 
-    handleOk() {
+    handleOk () {
       const _this = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
@@ -279,21 +282,19 @@ export default {
                 _this.$emit('ok')
                 _this.close()
               }
-
             }).catch(err => {
-              _this.$message.error(resp.msg)
+              _this.$message.error(err)
             }).finally(() => {
               _this.confirmLoading = false
             })
           }
-
         }
       })
     },
-    handleCancel() {
+    handleCancel () {
       this.close()
     }
-  },
+  }
 
 }
 </script>

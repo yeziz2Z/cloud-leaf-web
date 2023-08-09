@@ -3,10 +3,10 @@ import request from '@/utils/request'
 const api = {
   client: '/cloud-leaf-admin/oauth-clients',
   clientId: '/cloud-leaf-admin/oauth-clients/clientId',
-  page: '/cloud-leaf-admin/oauth-clients/page',
+  page: '/cloud-leaf-admin/oauth-clients/page'
 }
 
-export function add(data) {
+export function add (data) {
   return request({
     url: api.client,
     method: 'post',
@@ -14,7 +14,7 @@ export function add(data) {
   })
 }
 
-export function edit(data) {
+export function edit (data) {
   return request({
     url: api.client,
     method: 'put',
@@ -22,21 +22,21 @@ export function edit(data) {
   })
 }
 
-export function remove(clientIds) {
+export function remove (clientIds) {
   return request({
     url: api.client + '/' + clientIds,
     method: 'delete'
   })
 }
 
-export function getClientById(clientId) {
+export function getClientById (clientId) {
   return request({
     url: api.client + '/' + clientId,
     method: 'get'
   })
 }
 
-export function page(param) {
+export function page (param) {
   return request({
     url: api.page,
     method: 'get',
@@ -44,12 +44,10 @@ export function page(param) {
   })
 }
 
-export function checkClientId(param){
+export function checkClientId (param) {
   return request({
     url: api.clientId,
     method: 'get',
     params: param
   })
 }
-
-

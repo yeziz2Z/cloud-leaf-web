@@ -44,7 +44,7 @@
     >
 
       <span slot="status" slot-scope="text, record">
-          <a-tag :color="text?'green':'red'">{{ text ? '正常' : '停用' }}</a-tag>
+          <a-tag :color="text == '1' ? 'green':'red'">{{ text == '1' ? '正常' : '停用' }}</a-tag>
         </span>
       <span slot="action" slot-scope="text, record">
             <template>

@@ -8,51 +8,54 @@
   >
     <a-spin :spinning="confirmLoading">
       <a-form :form="form" v-bind="formItemLayout">
-<!--        :lable-col="labelCol" :wrapper-col="wrapperCol"-->
-            <a-form-item label="角色名称"  >
-              <a-input
-                v-decorator="['name',
-                {rules:[{required:true,message:'请输入角色名称',whitespace:true}],
-                getValueFromEvent: e =>{ return e.target.value.trim()},
-                trigger:'blur',
-                validateTrigger:'blur'
-                }]"/>
-            </a-form-item>
-            <a-form-item label="角色编码"  >
-              <a-input v-decorator="['code',
-               {rules:
-                 [
-                   {required:true,message:'角色编码'},
-                 ],
-                trigger:'blur',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-               }
-               ]"/>
-            </a-form-item>
+        <!--        :lable-col="labelCol" :wrapper-col="wrapperCol"-->
+        <a-form-item label="角色名称" >
+          <a-input
+            v-decorator="['name',
+                          {rules:[{required:true,message:'请输入角色名称',whitespace:true}],
+                           getValueFromEvent: e =>{ return e.target.value.trim()},
+                           trigger:'blur',
+                           validateTrigger:'blur'
+                          }]"/>
+        </a-form-item>
+        <a-form-item label="角色编码" >
+          <a-input
+            v-decorator="['code',
+                          {rules:
+                             [
+                               {required:true,message:'角色编码'},
+                             ],
+                           trigger:'blur',
+                           validateTrigger:'blur',
+                           getValueFromEvent: e =>{ return e.target.value.trim()}
+                          }
+            ]"/>
+        </a-form-item>
 
-            <a-form-item label="角色顺序"  >
-              <a-input-number v-decorator="['orderNo',
-              {
-                rules:[
-                  {required:true,message:'请输入用户名称'},
-                  ],
-              }]"/>
-            </a-form-item>
-            <a-form-item label="状 态" >
-              <a-radio-group v-decorator="['status', {initialValue:'1'}]" :options="statusOptions">
-              </a-radio-group>
-            </a-form-item>
+        <a-form-item label="角色顺序" >
+          <a-input-number
+            v-decorator="['orderNo',
+                          {
+                            rules:[
+                              {required:true,message:'请输入用户名称'},
+                            ],
+                          }]"/>
+        </a-form-item>
+        <a-form-item label="状 态" >
+          <a-radio-group v-decorator="['status', {initialValue:'1'}]" :options="statusOptions">
+          </a-radio-group>
+        </a-form-item>
 
-            <a-form-item label="备 注" >
-              <a-textarea v-decorator="['remark',
-              {
-                rules:[{max:100,message:'长度限制100'}],
-                trigger:'blur',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-              }]"/>
-            </a-form-item>
+        <a-form-item label="备 注" >
+          <a-textarea
+            v-decorator="['remark',
+                          {
+                            rules:[{max:100,message:'长度限制100'}],
+                            trigger:'blur',
+                            validateTrigger:'blur',
+                            getValueFromEvent: e =>{ return e.target.value.trim()}
+                          }]"/>
+        </a-form-item>
       </a-form>
 
     </a-spin>
@@ -65,8 +68,8 @@
 
 <script>
 import pick from 'lodash.pick'
-import {add, edit, getRoleById} from '@/api/system/role'
-import {dictDataOptions} from "@/api/system/dict";
+import { add, edit, getRoleById } from '@/api/system/role'
+import { dictDataOptions } from '@/api/system/dict'
 
 export default {
   name: 'RoleModal',
@@ -79,18 +82,18 @@ export default {
       },
       formItemLayout: {
         labelCol: { span: 6 },
-        wrapperCol: { span: 12 },
+        wrapperCol: { span: 12 }
       },
       visible: false,
       confirmLoading: false,
       mdl: {},
       id: null,
       form: this.$form.createForm(this),
-      statusOptions: [],
+      statusOptions: []
     }
   },
-  beforeCreate() {
-    dictDataOptions('sys_status').then(res =>{
+  beforeCreate () {
+    dictDataOptions('sys_status').then(res => {
       this.statusOptions = res.data
     })
   },
@@ -102,7 +105,7 @@ export default {
     },
     edit (id) {
       this.id = id
-      getRoleById(id).then(resp =>{
+      getRoleById(id).then(resp => {
         this.$nextTick(() => {
           this.form.setFieldsValue(pick(resp.data, 'name', 'code', 'orderNo', 'status', 'remark'))
         })
@@ -125,32 +128,31 @@ export default {
 
           _this.confirmLoading = true
           values.id = this.id
-          if (values.id){
+          if (values.id) {
             edit(values).then(resp => {
               if (resp.code === 200) {
                 _this.$message.success('修改成功')
                 _this.$emit('ok')
                 _this.close()
               } else {
-                _this.$message.error(resp.msg,3)
+                _this.$message.error(resp.msg, 3)
               }
             }).catch(err => {
               console.log(err)
             }).finally(() => {
               _this.confirmLoading = false
             })
-          }else {
+          } else {
             add(values).then(resp => {
               if (resp.code === 200) {
                 _this.$message.success('添加成功')
                 _this.$emit('ok')
                 _this.close()
-              }else {
-                _this.$message.error(resp.msg,3)
+              } else {
+                _this.$message.error(resp.msg, 3)
               }
-
             }).catch(err => {
-              _this.$message.error(resp.msg,3)
+              _this.$message.error(resp.msg, 3)
             }).finally(() => {
               _this.confirmLoading = false
             })
@@ -168,7 +170,7 @@ export default {
         indeterminate: false,
         checkedAll: e.target.checked
       })
-    },
+    }
   }
 }
 </script>

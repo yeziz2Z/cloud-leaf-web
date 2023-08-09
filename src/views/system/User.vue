@@ -106,7 +106,7 @@
                 <a-menu slot="overlay">
 
                   <a-menu-item>
-                    <a href="javascript:;">重置密码</a>
+                    <a @click="handleResetPassword(record)">重置密码</a>
                   </a-menu-item>
                   <a-menu-item>
                     <a @click="handleDelete(record)" v-permission="'system.user.delete'">删除</a>
@@ -119,6 +119,38 @@
       </a-col>
     </a-row>
 
+    <a-modal
+      title="重置密码"
+      :width="500"
+      :visible="resetPwd.visible"
+      :confirmLoading="resetPwd.confirmLoading"
+      @ok="handlerRestModalOk"
+      @cancel="handlerRestModalCancel">
+      <a-form :resetPwdForm = "resetPwd.form">
+        <a-popover
+          placement="rightTop"
+          :trigger="['focus']"
+          :getPopupContainer="(trigger) => trigger.parentElement"
+          v-model="resetPwd.state.passwordLevelChecked">
+          <template slot="content">
+            <div :style="{ width: '200px' }" >
+              <div :class="['user-register', passwordLevelClass]">{{ $t(passwordLevelName) }}</div>
+              <a-progress :percent="resetPwd.state.percent" :showInfo="false" :strokeColor=" passwordLevelColor " />
+              <div style="margin-top: 10px;">
+              <span>请至少输入 6 个字符。请不要使用容易被猜到的密码。</span>
+              </div>
+            </div>
+          </template>
+          <a-form-item>
+            <a-input-password
+              @click="handlePasswordInputClick"
+              placeholder="请至少输入 6 个字符。请不要使用容易被猜到的密码。"
+              v-decorator="['password', {rules: [{ required: true, message: '请输入密码！' }, { validator: this.handlePasswordLevel }], validateTrigger: ['change', 'blur']}]"
+            ></a-input-password>
+          </a-form-item>
+        </a-popover>
+      </a-form>
+    </a-modal>
     <user-modal :orgTree="orgTree" :roleOptions="roleOptions" ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
   </a-card>
 </template>
@@ -130,6 +162,26 @@ import { getOrgTree } from '@/api/system/org'
 import { list, remove } from '@/api/system/user'
 import { getRoles } from '@/api/system/role'
 import { Tree } from 'ant-design-vue'
+import { scorePassword } from '@/utils/util'
+
+const levelNames = {
+  0: '强度：太短',
+  1: '强度：低',
+  2: '强度：中',
+  3: '强度：强'
+}
+const levelClass = {
+  0: 'error',
+  1: 'error',
+  2: 'warning',
+  3: 'success'
+}
+const levelColor = {
+  0: '#ff0000',
+  1: '#ff0000',
+  2: '#ff7e05',
+  3: '#52c41a'
+}
 
 export default {
   name: 'User',
@@ -185,10 +237,35 @@ export default {
       roleOptions: [],
       ids: [],
       selectedRows: [],
-      colors: ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple']
+      colors: ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple'],
+      resetPwd: {
+        form: this.$form.createForm(this),
+        visible: false,
+        confirmLoading: false,
+        id: null,
+        state: {
+          level: 0,
+          passwordLevel: 0,
+          passwordLevelChecked: false,
+          percent: 10,
+          progressColor: '#FF0000'
+        }
+      }
+    }
+  },
+  computed: {
+    passwordLevelClass () {
+      return levelClass[this.resetPwd.state.passwordLevel]
+    },
+    passwordLevelName () {
+      return levelNames[this.resetPwd.state.passwordLevel]
+    },
+    passwordLevelColor () {
+      return levelColor[this.resetPwd.state.passwordLevel]
     }
   },
   created () {
+    console.log(this.$form)
     getOrgTree().then(res => {
       this.orgTree = res.data
     })
@@ -207,10 +284,43 @@ export default {
     refresh () {
       this.$refs.table.refresh(true)
     },
-    resetPassword () {
+    handleResetPassword (record) {
+      this.resetPwd.visible = true
+    },
+    handlePasswordLevel (rule, value, callback) {
 
+      console.log(rule, value, callback)
+      if (value === '') {
+        return callback()
+      }
+      console.log('scorePassword ; ', scorePassword(value))
+      if (value.length >= 6) {
+        if (scorePassword(value) >= 30) {
+          this.resetPwd.state.level = 1
+        }
+        if (scorePassword(value) >= 60) {
+          this.resetPwd.state.level = 2
+        }
+        if (scorePassword(value) >= 80) {
+          this.resetPwd.state.level = 3
+        }
+      } else {
+        this.resetPwd.state.level = 0
+        callback(new Error('密码强度不够'))
+      }
+      this.resetPwd.state.passwordLevel = this.state.level
+      this.resetPwd.state.percent = this.state.level * 33
+
+      callback()
     },
 
+    handlePasswordInputClick () {
+      if (!this.isMobile) {
+        this.resetPwd.state.passwordLevelChecked = true
+        return
+      }
+      this.resetPwd.state.passwordLevelChecked = false
+    },
     getUserList (parameter) {
       if (!parameter) {
         const page = this.$refs.table.localPagination
@@ -222,7 +332,7 @@ export default {
       return list(Object.assign(parameter, this.queryParam))
         .then(res => {
           return res.data
-        }).finally(() =>{
+        }).finally(() => {
           this.clearSelected()
         })
     },
@@ -290,6 +400,15 @@ export default {
     onSelectChange (ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
+    },
+    handlerRestModalOk () {
+
+    },
+    handlerRestModalCancel () {
+      this.resetPwd.visible = false
+      console.log('======================start=================')
+      console.log(this.resetPwd.form)
+      console.log('--------------------end--------------------')
     }
   }
 }

@@ -87,17 +87,17 @@
 </template>
 
 <script>
-import {add, edit, getClientById, checkClientId} from '@/api/system/oauthClients'
-import {dictDataOptions} from '@/api/system/dict'
-import pick from "lodash.pick";
+import { add, edit, getClientById, checkClientId } from '@/api/system/oauthClients'
+import { dictDataOptions } from '@/api/system/dict'
+import pick from 'lodash.pick'
 
-const icons = ['plus-circle', 'check-circle'];
-const titles = ['新增', '编辑', '查看'];
+const icons = ['plus-circle', 'check-circle']
+const titles = ['新增', '编辑', '查看']
 
 export default {
   name: 'OauthClientModal',
 
-  data() {
+  data () {
     return {
       visible: false,
       confirmLoading: false,
@@ -109,15 +109,15 @@ export default {
         footVisible: true
       },
       layout: {
-        labelCol: {span: 6},
-        wrapperCol: {span: 16}
+        labelCol: { span: 6 },
+        wrapperCol: { span: 16 }
       },
       // 表单校验规则
       rules: {
         clientId: [
           'clientId', {
             rules: [
-              {required: true, message: '请输入客户端ID', whitespace: true},
+              { required: true, message: '请输入客户端ID', whitespace: true },
               {
                 validator: (rule, value, callback) => {
                   if (!value) {
@@ -136,7 +136,7 @@ export default {
         ],
         clientSecret: ['clientSecret',
           {
-            rules: [{required: true, message: '请输入客户端密钥', whitespace: true}],
+            rules: [{ required: true, message: '请输入客户端密钥', whitespace: true }],
             getValueFromEvent: e => this.trimInput(e),
             trigger: 'blur',
             validateTrigger: 'blur'
@@ -148,10 +148,10 @@ export default {
             trigger: 'blur',
             validateTrigger: 'blur'
           }],
-        autoApprove: ['autoApprove', {valuePropName: 'checked', initialValue: true}],
+        autoApprove: ['autoApprove', { valuePropName: 'checked', initialValue: true }],
         accessTokenValidity: ['accessTokenValidity',
           {
-            rules: [{type: 'integer', message: '请输入正确的有效时间 单位:s', transform: val => Number(val)}],
+            rules: [{ type: 'integer', message: '请输入正确的有效时间 单位:s', transform: val => Number(val) }],
             getValueFromEvent: e => this.trimInput(e),
             trigger: 'blur',
             validateTrigger: 'blur'
@@ -159,7 +159,7 @@ export default {
         refreshTokenValidity: ['refreshTokenValidity',
           {
             // 设置 type 为  number 需要添加  transform 进行转换
-            rules: [{type: 'number', message: '请输入正确的有效时间 单位:s', transform: val => Number(val)}],
+            rules: [{ type: 'number', message: '请输入正确的有效时间 单位:s', transform: val => Number(val) }],
             getValueFromEvent: e => this.trimInput(e),
             trigger: 'blur',
             validateTrigger: 'blur'
@@ -184,31 +184,30 @@ export default {
             getValueFromEvent: e => this.trimInput(e),
             trigger: 'blur',
             validateTrigger: 'blur'
-          }],
+          }]
 
       }
     }
   },
-  beforeCreate() {
-
-    dictDataOptions('grant_type').then(res =>{
+  beforeCreate () {
+    dictDataOptions('grant_type').then(res => {
       this.authorizedGrantTypesOptions = res.data
-    }).catch(err =>{
+    }).catch(err => {
       this.authorizedGrantTypesOptions = []
     })
 
     this.form = this.$form.createForm(this)
   },
-  created() {
+  created () {
   },
   methods: {
-    add() {
+    add () {
       this.modalProp.title = titles[0]
       this.modalProp.btnIcon = icons[0]
       this.modalProp.footVisible = true
       this.visible = true
     },
-    edit(id) {
+    edit (id) {
       this.id = id
       this.modalProp.title = titles[1]
       this.modalProp.btnIcon = icons[1]
@@ -216,7 +215,7 @@ export default {
       this.visible = true
       getClientById(id).then(res => {
         this.$nextTick(() => {
-          res.data.autoApprove = res.data.autoApprove === 1 ? true : false
+          res.data.autoApprove = res.data.autoApprove === 1
           if (res.data.authorizedGrantTypes) {
             res.data.authorizedGrantTypes = res.data.authorizedGrantTypes.split(',')
           } else {
@@ -235,23 +234,22 @@ export default {
             'authorizedGrantTypes'))
         })
       })
-
     },
-    view(id) {
+    view (id) {
       this.modalProp.title = titles[2]
       this.$nextTick(() => {
         this.modalProp.footVisible = false
       })
       this.visible = true
     },
-    close() {
+    close () {
       this.$emit('close')
       this.visible = false
       this.id = null
       this.form.resetFields()
     },
-    checkClientId(clientId, callback) {
-      checkClientId({id: this.id, clientId: clientId}).then(res => {
+    checkClientId (clientId, callback) {
+      checkClientId({ id: this.id, clientId: clientId }).then(res => {
         if (res.code === 200) {
           callback()
         } else {
@@ -259,7 +257,7 @@ export default {
         }
       })
     },
-    handleOk() {
+    handleOk () {
       const _this = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
@@ -290,24 +288,22 @@ export default {
                 _this.$emit('ok')
                 _this.close()
               }
-
             }).catch(err => {
-              _this.$message.error(resp.msg)
+              _this.$message.error(err)
             }).finally(() => {
               _this.confirmLoading = false
             })
           }
-
         }
       })
     },
-    handleCancel() {
+    handleCancel () {
       this.close()
     },
-    trimInput(e) {
+    trimInput (e) {
       return e.target.value.trim()
     }
-  },
+  }
 
 }
 </script>
