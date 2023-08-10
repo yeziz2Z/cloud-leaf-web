@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 const userApi = {
   Login: '/cloud-leaf-oauth2/oauth2/token',
-  Captcha: '/captcha',
+  Captcha: '/cloud-leaf-admin/auth/captcha',
   Logout: '/cloud-leaf-oauth2/oauth/logout',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',

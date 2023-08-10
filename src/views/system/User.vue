@@ -78,12 +78,12 @@
             :rowSelection="{ selectedRowKeys: ids, onChange: onSelectChange }"
           >
 
-            <span slot="roles" slot-scope="text,record">
-              <a-tag v-for="(role) in text " :color="colors[Math.floor(Math.random()*6)]" :key="role.id">{{
-                  role.name
-                }}</a-tag>
-            </span>
-            <span slot="status" slot-scope="text, record">
+            <template #roles="roles">
+              <a-tag v-for="(role) in roles " :color="colors[Math.floor(Math.random()*6)]" :key="role.id">{{
+                role.name
+              }}</a-tag>
+            </template>
+            <template #status="text, record">
               <a-popconfirm
                 ok-text="是"
                 cancel-text="否"
@@ -93,8 +93,8 @@
                 <span slot="title">确认<b>{{ record.status ? '停用' : '启用' }}</b>{{ record.nickName }}的用户吗?</span>
                 <a-switch checked-children="启用" un-checked-children="停用" :checked="record.status"/>
               </a-popconfirm>
-            </span>
-            <span slot="action" slot-scope="text, record">
+            </template>
+            <template #action="text, record">
               <template>
                 <a @click="handleEdit(record)">编辑</a>
                 <a-divider type="vertical"/>
@@ -113,7 +113,7 @@
                   </a-menu-item>
                 </a-menu>
               </a-dropdown>
-            </span>
+            </template>
           </s-table>
         </a-card>
       </a-col>
@@ -134,7 +134,7 @@
           :trigger="['focus']"
           :getPopupContainer="(trigger) => trigger.parentElement"
           v-model="resetPwd.state.passwordLevelChecked">
-          <template slot="content">
+          <template #content>
             <div :style="{ width: '200px' }">
               <div :class="['reset-password', passwordLevelClass]">{{ passwordLevelName }}</div>
               <a-progress :percent="resetPwd.state.percent" :showInfo="false" :strokeColor=" passwordLevelColor "/>
@@ -149,8 +149,8 @@
               @click="() => this.resetPwd.state.passwordLevelChecked = true"
               placeholder="请至少输入 6 个字符。请不要使用容易被猜到的密码。"
               v-decorator="['password', {rules: [{ required: true, message: '请输入密码！' },
-              { validator: this.handlePasswordLevel }],
-                validateTrigger: ['change', 'blur']}]"
+                                                 { validator: this.handlePasswordLevel }],
+                                         validateTrigger: ['change', 'blur']}]"
             ></a-input-password>
           </a-form-item>
         </a-popover>
@@ -161,13 +161,13 @@
 </template>
 
 <script>
-import {STable} from '@/components'
+import { STable } from '@/components'
 import UserModal from './modules/UserModal'
-import {getOrgTree} from '@/api/system/org'
-import {list, remove, resetPassword} from '@/api/system/user'
-import {getRoles} from '@/api/system/role'
-import {Tree} from 'ant-design-vue'
-import {scorePassword} from '@/utils/util'
+import { getOrgTree } from '@/api/system/org'
+import { list, remove, resetPassword } from '@/api/system/user'
+import { getRoles } from '@/api/system/role'
+import { Tree } from 'ant-design-vue'
+import { scorePassword } from '@/utils/util'
 
 const levelNames = {
   0: '强度：太短',
@@ -196,7 +196,7 @@ export default {
     UserModal,
     ATree: Tree
   },
-  data() {
+  data () {
     return {
       // 查询参数
       queryParam: {},
@@ -215,7 +215,7 @@ export default {
         {
           title: '角色',
           dataIndex: 'roles',
-          scopedSlots: {customRender: 'roles'}
+          scopedSlots: { customRender: 'roles' }
         },
         {
           title: '部门',
@@ -224,7 +224,7 @@ export default {
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: {customRender: 'status'}
+          scopedSlots: { customRender: 'status' }
         },
         /* {
           title: '手机号',
@@ -235,7 +235,7 @@ export default {
           title: '操作',
           dataIndex: 'action',
           width: '150px',
-          scopedSlots: {customRender: 'action'}
+          scopedSlots: { customRender: 'action' }
         }
       ],
       orgTree: [],
@@ -260,46 +260,46 @@ export default {
     }
   },
   computed: {
-    passwordLevelClass() {
+    passwordLevelClass () {
       return levelClass[this.resetPwd.state.passwordLevel]
     },
-    passwordLevelName() {
+    passwordLevelName () {
       return levelNames[this.resetPwd.state.passwordLevel]
     },
-    passwordLevelColor() {
+    passwordLevelColor () {
       return levelColor[this.resetPwd.state.passwordLevel]
     }
   },
-  created() {
+  created () {
     getOrgTree().then(res => {
       this.orgTree = res.data
     })
     getRoles().then(res => {
       this.roleOptions = res.data.map((role, idx) => {
-        return {label: role.name, value: role.id}
+        return { label: role.name, value: role.id }
       })
     })
   },
   methods: {
-    handleClick(key, e) {
+    handleClick (key, e) {
       console.log(e)
       this.queryParam.orgId = key.length ? key[0] : null
       this.refresh()
     },
-    refresh() {
+    refresh () {
       this.$refs.table.refresh(true)
     },
-    handleResetPassword(record) {
+    handleResetPassword (record) {
       this.resetPwd.userId = record.id
       this.resetPwd.username = record.username
       this.resetPwd.visible = true
     },
-    handlePasswordLevel(rule, value, callback) {
+    handlePasswordLevel (rule, value, callback) {
       if (value === '') {
         return callback()
       }
       if (value.length >= 6) {
-        let score = scorePassword(value)
+        const score = scorePassword(value)
         if (score >= 30) {
           this.resetPwd.state.level = 1
         }
@@ -318,7 +318,7 @@ export default {
 
       callback()
     },
-    getUserList(parameter) {
+    getUserList (parameter) {
       if (!parameter) {
         const page = this.$refs.table.localPagination
         parameter = {
@@ -333,28 +333,28 @@ export default {
           this.clearSelected()
         })
     },
-    confirmHandleStatus(row) {
-      console.log("确认")
+    confirmHandleStatus (row) {
+      console.log('确认')
     },
-    cancelHandleStatus(row) {
-      console.log("取消")
+    cancelHandleStatus (row) {
+      console.log('取消')
     },
-    handleAdd(item) {
+    handleAdd (item) {
       this.$refs.modal.add(item.key)
     },
-    handleEdit(record) {
+    handleEdit (record) {
       this.$refs.modal.edit(record.id || this.ids[0])
     },
-    handleView(record) {
+    handleView (record) {
       this.$refs.modal.view(record.id || this.ids[0])
     },
-    handleDelete(record) {
+    handleDelete (record) {
       const userIds = record.id || this.ids
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + userIds + '的数据',
-        onOk() {
+        onOk () {
           return remove(userIds)
             .then(resp => {
               if (resp.code === 200) {
@@ -365,7 +365,7 @@ export default {
               }
             })
         },
-        onCancel() {
+        onCancel () {
         }
       })
 
@@ -380,25 +380,25 @@ export default {
         this.$message.error(err)
       }) */
     },
-    handleTitleClick(item) {
+    handleTitleClick (item) {
     },
-    titleClick(e) {
+    titleClick (e) {
     },
-    handleSaveOk() {
+    handleSaveOk () {
       this.ids = []
       this.refresh()
     },
-    handleSaveClose(e) {
+    handleSaveClose (e) {
     },
-    clearSelected() {
+    clearSelected () {
       this.ids = []
       this.selectedRows = []
     },
-    onSelectChange(ids, selectedRows) {
+    onSelectChange (ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
     },
-    handlerRestModalOk() {
+    handlerRestModalOk () {
       // 触发表单验证
       this.resetPwd.form.validateFields((err, values) => {
         // 验证表单没错误
@@ -418,14 +418,12 @@ export default {
             console.log(err)
           }).finally(() => {
             this.resetPwd.confirmLoading = false
-
           })
-
         }
       })
     },
 
-    handlerRestModalCancel() {
+    handlerRestModalCancel () {
       this.resetPwd.state = {
         passwordLevelChecked: false,
         level: 0,
