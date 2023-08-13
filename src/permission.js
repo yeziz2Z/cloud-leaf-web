@@ -34,6 +34,16 @@ router.beforeEach((to, from, next) => {
             store.dispatch('GenerateRoutes').then(() => {
               // 根据roles权限生成可访问的路由表
               // 动态添加可访问路由表
+              //清空原有路由 重新添加
+
+              // TODO 此处待优化 消除路由冲突警告
+              // 清空路由配置
+              router.options.routes = []
+              // 重新实例化路由对象
+              const newRouter = new router.constructor(router.options)
+              router.matcher = newRouter.matcher
+
+
               // VueRouter@3.5.0+ New API
               store.getters.addRouters.forEach(r => {
                 router.addRoute(r)
@@ -41,7 +51,7 @@ router.beforeEach((to, from, next) => {
               // 请求带有 redirect 重定向时，登录自动重定向到该地址
               const redirect = decodeURIComponent(from.query.redirect || to.path)
               if (to.path === redirect) {
-                // set the replace: true so the navigation will not leave a history record
+                // set the replacement: true so the navigation will not leave a history record
                 next({...to, replace: true})
               } else {
                 // 跳转到目的路由
