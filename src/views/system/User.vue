@@ -167,7 +167,7 @@ import { getOrgTree } from '@/api/system/org'
 import { list, remove, resetPassword } from '@/api/system/user'
 import { getRoles } from '@/api/system/role'
 import { Tree } from 'ant-design-vue'
-import { scorePassword } from '@/utils/util'
+import {encrypt, scorePassword} from '@/utils/util'
 
 const levelNames = {
   0: '强度：太短',
@@ -405,7 +405,7 @@ export default {
         if (!err) {
           values.userId = this.resetPwd.userId
           console.log('form values', values)
-
+          values.password = encrypt(values.password)
           this.resetPwd.confirmLoading = true
           resetPassword(values).then(resp => {
             if (resp.code === 200) {

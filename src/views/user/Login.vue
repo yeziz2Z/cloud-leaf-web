@@ -8,53 +8,53 @@
       @submit="handleSubmit"
     >
 
-          <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;"
-                   :message="loginErrorMsg"/>
-          <a-form-item>
-            <a-input
-              size="large"
-              type="text"
-              :placeholder="$t('user.login.username.placeholder')"
-              v-decorator="[
+      <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;"
+               :message="loginErrorMsg"/>
+      <a-form-item>
+        <a-input
+          size="large"
+          type="text"
+          :placeholder="$t('user.login.username.placeholder')"
+          v-decorator="[
                 'username',
                 {rules: [{ required: true, message: $t('user.userName.required') }], validateTrigger: 'change'}
               ]"
-            >
-              <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input>
-          </a-form-item>
+        >
+          <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+        </a-input>
+      </a-form-item>
 
-          <a-form-item>
-            <a-input-password
-              size="large"
-              :placeholder="$t('user.login.password.placeholder')"
-              v-decorator="[
+      <a-form-item>
+        <a-input-password
+          size="large"
+          :placeholder="$t('user.login.password.placeholder')"
+          v-decorator="[
                 'password',
                 {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
               ]"
-            >
-              <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-            </a-input-password>
+        >
+          <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+        </a-input-password>
+      </a-form-item>
+
+      <a-form-item hidden>
+        <a-input v-decorator="['uid',{}]"/>
+      </a-form-item>
+
+      <a-row :gutter="16">
+        <a-col class="gutter-row" :span="16">
+          <a-form-item>
+            <a-input size="large" :maxLength="5" type="text" placeholder="验证码"
+                     v-decorator="['captcha', {rules: [{ required: true, message: $t('user.verification-code.required') }], validateTrigger: 'blur'}]">
+              <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
+            </a-input>
           </a-form-item>
+        </a-col>
+        <a-col class="gutter-row" :span="8">
+          <img :src="captchaImg" @click.stop.prevent="getCaptchaImage"/>
 
-        <a-form-item hidden>
-          <a-input v-decorator="['uid',{}]" />
-        </a-form-item>
-
-          <a-row :gutter="16">
-            <a-col class="gutter-row" :span="16">
-              <a-form-item>
-                <a-input size="large" :maxLength="5" type="text" placeholder="验证码"
-                         v-decorator="['captcha', {rules: [{ required: true, message: $t('user.verification-code.required') }], validateTrigger: 'blur'}]">
-                  <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
-                </a-input>
-              </a-form-item>
-            </a-col>
-            <a-col class="gutter-row" :span="8">
-              <img :src="captchaImg" @click.stop.prevent="getCaptchaImage"/>
-
-            </a-col>
-          </a-row>
+        </a-col>
+      </a-row>
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe', { valuePropName: 'checked' }]">{{
             $t('user.login.remember-me')
@@ -87,12 +87,11 @@
 
 <script>
 import {mapActions} from 'vuex'
-import {timeFix} from '@/utils/util'
+import {timeFix, encrypt} from '@/utils/util'
 import {captcha} from '@/api/login'
 
 export default {
-  components: {
-  },
+  components: {},
   data() {
     return {
       loginBtn: false,
@@ -125,7 +124,7 @@ export default {
       validateFields({force: true}, (err, values) => {
         if (!err) {
           const loginParams = {...values}
-          loginParams.password = values.password
+          loginParams.password = encrypt(values.password)
           loginParams.grant_type = 'captcha'
           Login(loginParams)
             .then((res) => this.loginSuccess(res))
