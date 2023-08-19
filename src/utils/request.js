@@ -2,8 +2,8 @@ import axios from 'axios'
 import store from '@/store'
 import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
-import {VueAxios} from './axios'
-import {ACCESS_TOKEN, REFRESH_TOKEN} from '@/store/mutation-types'
+import { VueAxios } from './axios'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/store/mutation-types'
 
 // 创建 axios 实例
 const request = axios.create({
@@ -11,11 +11,11 @@ const request = axios.create({
   baseURL: process.env.VUE_APP_API_BASE_URL,
   timeout: 6000 // 请求超时时间
 })
-let refreshing = false, // 正在刷新标识，避免重复刷新
-  waitQueue = []  // 请求等待队列
+let refreshing = false // 正在刷新标识，避免重复刷新
+  let waitQueue = [] // 请求等待队列
 // 异常拦截处理器
 const errorHandler = (error) => {
-  let config = error.config
+  const config = error.config
   if (error.response) {
     const data = error.response.data
     // 从 localstorage 获取 token
@@ -26,7 +26,7 @@ const errorHandler = (error) => {
         description: data.msg
       })
     }
-    /*if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
+    /* if (error.response.status === 401 && !(data.result && data.result.isLogin)) {
       notification.error({
         message: 'Unauthorized',
         description: 'Authorization verification failed'
@@ -36,9 +36,9 @@ const errorHandler = (error) => {
           window.location.reload()
         })
       }
-    }*/
+    } */
     if (error.response.status === 401) {
-      //非法 token 重新登录
+      // 非法 token 重新登录
       if (data.code === 400001 && token) {
         store.dispatch('ResetToken').then(() => {
           window.location.reload()
@@ -47,13 +47,13 @@ const errorHandler = (error) => {
       // token过期
       if (data.code === 400002) {
         if (refreshing) { // 当前正在尝试刷新 access_token
-          return new Promise((resolve => {
+          return new Promise(resolve => {
             waitQueue.push((token) => {
               config.headers['Authorization'] = token
               config.baseURL = process.env.VUE_APP_API_BASE_URL
               resolve(request(config))
             })
-          }))
+          })
         } else {
           refreshing = true
           store.dispatch('RefreshToken').then((token) => {
@@ -76,7 +76,6 @@ const errorHandler = (error) => {
             refreshing = false
           })
         }
-
       }
     }
   }
@@ -101,7 +100,7 @@ request.interceptors.response.use((response) => {
 
 const installer = {
   vm: {},
-  install(Vue) {
+  install (Vue) {
     Vue.use(VueAxios, request)
   }
 }

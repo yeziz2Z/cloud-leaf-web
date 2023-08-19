@@ -62,8 +62,8 @@ export default {
       type: Boolean,
       default: false
     },
-    showTotal:{
-      type:Function
+    showTotal: {
+      type: Function
     },
     showPagination: {
       type: String | Boolean,
@@ -193,9 +193,9 @@ export default {
           this.localDataSource = r.records // 返回结果中的数组数据
           // console.log("showTotal",this.showTotal());
 
-          /*if (this.showTotal){
+          /* if (this.showTotal){
             this.localPagination.showTotal = (total) => `共 ${total} 条`
-          }*/
+          } */
           this.localLoading = false
         })
       }

@@ -218,13 +218,13 @@ export default {
     this.user = this.userInfo
     this.avatar = this.userInfo.avatar
 
-    /*getRoleList().then(res => {
+    /* getRoleList().then(res => {
       // console.log('workplace -> call getRoleList()', res)
     })
 
     getServiceList().then(res => {
       // console.log('workplace -> call getServiceList()', res)
-    })*/
+    }) */
   },
   mounted () {
     this.getProjects()

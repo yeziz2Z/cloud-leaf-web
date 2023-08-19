@@ -19,7 +19,7 @@ function plugin (Vue) {
     return
   }
 
-  /*!Vue.prototype.$auth && Object.defineProperties(Vue.prototype, {
+  /*! Vue.prototype.$auth && Object.defineProperties(Vue.prototype, {
     $auth: {
       get () {
         const _this = this
@@ -34,13 +34,13 @@ function plugin (Vue) {
         }
       }
     }
-  })*/
+  }) */
   !Vue.prototype.$auth && Object.defineProperties(Vue.prototype, {
     $auth: {
       get () {
         const _this = this
         return (permissions) => {
-          console.log("==============> permissions:",permissions)
+          console.log('==============> permissions:', permissions)
           const [permission, action] = permissions.split('.')
           const permissionList = _this.$store.getters.permissions
           return permissionList.find((val) => {

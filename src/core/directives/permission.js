@@ -6,10 +6,9 @@ const permission = Vue.directive('permission', {
     const actionVal = binding.value
     const permissions = store.getters.permissions
 
-    if(permissions && !permissions.includes(actionVal)){
+    if (permissions && !permissions.includes(actionVal)) {
       el.parentNode && el.parentNode.removeChild(el) || (el.style.display = 'none')
     }
-
   }
 })
 

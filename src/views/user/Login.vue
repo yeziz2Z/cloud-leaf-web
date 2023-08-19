@@ -8,17 +8,21 @@
       @submit="handleSubmit"
     >
 
-      <a-alert v-if="isLoginError" type="error" showIcon style="margin-bottom: 24px;"
-               :message="loginErrorMsg"/>
+      <a-alert
+        v-if="isLoginError"
+        type="error"
+        showIcon
+        style="margin-bottom: 24px;"
+        :message="loginErrorMsg"/>
       <a-form-item>
         <a-input
           size="large"
           type="text"
           :placeholder="$t('user.login.username.placeholder')"
           v-decorator="[
-                'username',
-                {rules: [{ required: true, message: $t('user.userName.required') }], validateTrigger: 'change'}
-              ]"
+            'username',
+            {rules: [{ required: true, message: $t('user.userName.required') }], validateTrigger: 'change'}
+          ]"
         >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input>
@@ -29,9 +33,9 @@
           size="large"
           :placeholder="$t('user.login.password.placeholder')"
           v-decorator="[
-                'password',
-                {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
-              ]"
+            'password',
+            {rules: [{ required: true, message: $t('user.password.required') }], validateTrigger: 'blur'}
+          ]"
         >
           <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input-password>
@@ -44,8 +48,12 @@
       <a-row :gutter="16">
         <a-col class="gutter-row" :span="16">
           <a-form-item>
-            <a-input size="large" :maxLength="5" type="text" placeholder="验证码"
-                     v-decorator="['captcha', {rules: [{ required: true, message: $t('user.verification-code.required') }], validateTrigger: 'blur'}]">
+            <a-input
+              size="large"
+              :maxLength="5"
+              type="text"
+              placeholder="验证码"
+              v-decorator="['captcha', {rules: [{ required: true, message: $t('user.verification-code.required') }], validateTrigger: 'blur'}]">
               <a-icon slot="prefix" type="mail" :style="{ color: 'rgba(0,0,0,.25)' }"/>
             </a-input>
           </a-form-item>
@@ -57,8 +65,8 @@
       </a-row>
       <a-form-item>
         <a-checkbox v-decorator="['rememberMe', { valuePropName: 'checked' }]">{{
-            $t('user.login.remember-me')
-          }}
+          $t('user.login.remember-me')
+        }}
         </a-checkbox>
         <router-link
           :to="{ name: 'recover', params: { user: 'aaa'} }"
@@ -86,44 +94,44 @@
 </template>
 
 <script>
-import {mapActions} from 'vuex'
-import {timeFix, encrypt} from '@/utils/util'
-import {captcha} from '@/api/login'
+import { mapActions } from 'vuex'
+import { timeFix, encrypt } from '@/utils/util'
+import { captcha } from '@/api/login'
 
 export default {
   components: {},
-  data() {
+  data () {
     return {
       loginBtn: false,
       captchaImg: null,
       // login type: 0 email, 1 username, 2 telephone
       isLoginError: false,
-      loginErrorMsg: "",
+      loginErrorMsg: '',
       form: this.$form.createForm(this),
       state: {
         time: 60,
-        loginBtn: false,
+        loginBtn: false
       }
     }
   },
-  created() {
+  created () {
     this.getCaptchaImage()
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
 
-    handleSubmit(e) {
+    handleSubmit (e) {
       e.preventDefault()
       const {
-        form: {validateFields},
+        form: { validateFields },
         state,
         Login
       } = this
       state.loginBtn = true
 
-      validateFields({force: true}, (err, values) => {
+      validateFields({ force: true }, (err, values) => {
         if (!err) {
-          const loginParams = {...values}
+          const loginParams = { ...values }
           loginParams.password = encrypt(values.password)
           loginParams.grant_type = 'captcha'
           Login(loginParams)
@@ -140,7 +148,7 @@ export default {
       })
     },
 
-    getCaptchaImage() {
+    getCaptchaImage () {
       captcha().then(resp => {
         this.captchaImg = resp.data.captcha
         this.form.setFieldsValue({
@@ -151,8 +159,8 @@ export default {
       })
     },
 
-    loginSuccess(res) {
-      console.log(res);
+    loginSuccess (res) {
+      console.log(res)
       // check res.homePage define, set $router.push name res.homePage
       // Why not enter onComplete
       /*
@@ -164,7 +172,7 @@ export default {
         })
       })
       */
-      this.$router.push({path: '/'})
+      this.$router.push({ path: '/' })
       // 延迟 1 秒显示欢迎信息
       setTimeout(() => {
         this.$notification.success({
@@ -174,15 +182,15 @@ export default {
       }, 1000)
       this.isLoginError = false
     },
-    requestFailed(err) {
-      console.log(err);
+    requestFailed (err) {
+      console.log(err)
       this.loginErrorMsg = err.msg
       this.isLoginError = true
-      /*this.$notification['error']({
+      /* this.$notification['error']({
         message: '错误',
         description: ((err.response || {}).data || {}).message || '请求出现错误，请稍后再试',
         duration: 4
-      })*/
+      }) */
     }
   }
 }

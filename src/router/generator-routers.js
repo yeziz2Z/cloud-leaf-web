@@ -119,7 +119,6 @@ export const generatorDynamicRouter = () => {
  */
 export const generator = (routerMap, parent) => {
   return routerMap.map(item => {
-
     const currentRouter = {
       // 如果路由设置了 path，则作为默认 path，否则 路由地址 动态拼接生成如 /dashboard/workplace
       path: item.path || `${(parent && parent.path) || ''}/${item.key}`,
@@ -133,22 +132,22 @@ export const generator = (routerMap, parent) => {
       // meta: 页面标题, 菜单图标, 页面权限(供指令权限用，可去掉)
       meta: {
         title: item.title || item.meta.title,
-        icon: item.icon ,
+        icon: item.icon,
         hiddenHeaderContent: item.hiddenHeaderContent,
-        target: item.newWindow ? item.path : undefined,
+        target: item.newWindow ? item.path : undefined
 
       }
     }
     // 是否设置了隐藏菜单
-    /*if (show === false) {
+    /* if (show === false) {
       currentRouter.hidden = true
-    }*/
+    } */
     currentRouter.hidden = item.hidden
     // 是否设置了隐藏子菜单
     // 为了防止出现后端返回结果不规范，处理有可能出现拼接出两个 反斜杠
-    /*if (hideChildren) {
+    /* if (hideChildren) {
       currentRouter.hideChildrenInMenu = true
-    }*/
+    } */
     currentRouter.hideChildrenInMenu = item.hideChildrenInMenu
     if (!currentRouter.path.startsWith('http')) {
       currentRouter.path = currentRouter.path.replace('//', '/')

@@ -30,16 +30,21 @@
           <a-col :md="8" :sm="24">
             <a-form-item
               label="操作时间">
-              <a-range-picker v-model="queryParam.loginTime"
+              <a-range-picker
+v-model="queryParam.loginTime"
                               style="width: 100%"
               />
             </a-form-item>
           </a-col>
 
           <a-col :md="8" :sm="24">
-                  <span class="table-page-search-submitButtons"
-                        :style=" { float: 'right', overflow: 'hidden' }  ">
-                    <a-button type="primary" icon="search" v-permission="'system.user.list'"
+                  <span
+class="table-page-search-submitButtons"
+                        :style=" { float: 'right', overflow: 'hidden' } ">
+                    <a-button
+type="primary"
+icon="search"
+v-permission="'system.user.list'"
                               @click="refresh">查询</a-button>
                     <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
 
@@ -51,7 +56,11 @@
 
     <div class="table-operator">
 
-      <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete"
+      <a-button
+type="danger"
+:disabled="ids.length === 0"
+icon="delete"
+@click="handleDelete"
                 v-permission="'system.loginLog.delete'">删除
       </a-button>
       <a-button type="danger" icon="delete" @click="removeAll">清空</a-button>
@@ -60,44 +69,44 @@
     <s-table
       ref="table"
       size="default"
-      :rowKey='record => record.id'
+      :rowKey="record => record.id"
       :pagination="{ showTotal: total => `共 ${total} 条` }"
       :columns="columns"
       :data="getLoginLogs"
       :rowSelection="{ selectedRowKeys: ids, onChange: onSelectChange }"
     >
-        <span slot="status" slot-scope="text, record">
-          <a-tag :color="text=='1'?'green':'red'">{{ text == '1' ? '成功' : '失败' }}</a-tag>
-        </span>
+        <template v-slot:status="text">
+          <a-tag :color="text==='1'?'green':'red'">{{ text === '1' ? '成功' : '失败' }}</a-tag>
+        </template>
 
     </s-table>
   </a-card>
 </template>
 
 <script>
-import {STable} from '@/components'
-import {getOperLogs, remove} from "@/api/system/operLog"
-import moment from "moment"
+import { STable } from '@/components'
+import { getOperLogs, remove } from '@/api/system/operLog'
+import moment from 'moment'
 import pick from 'lodash.pick'
 
 export default {
-  name: "OperLog",
+  name: 'OperLog',
   components: {
-    STable,
+    STable
   },
-  data() {
+  data () {
     return {
-      //查询参数
+      // 查询参数
       queryParam: {},
       businessTypeOptions: [
-        {label: '其他', value: 0},
-        {label: '新增', value: 1},
-        {label: '修改', value: 2},
-        {label: '查询', value: 3},
-        {label: '删除', value: 4},
-        {label: '授权', value: 5},
-        {label: '导入', value: 6},
-        {label: '导出', value: 7}
+        { label: '其他', value: 0 },
+        { label: '新增', value: 1 },
+        { label: '修改', value: 2 },
+        { label: '查询', value: 3 },
+        { label: '删除', value: 4 },
+        { label: '授权', value: 5 },
+        { label: '导入', value: 6 },
+        { label: '导出', value: 7 }
       ],
       columns: [
         {
@@ -113,11 +122,11 @@ export default {
         },
         {
           title: '请求方式',
-          dataIndex: 'requestMethod',
+          dataIndex: 'requestMethod'
         },
         {
           title: '操作人员',
-          dataIndex: 'operName',
+          dataIndex: 'operName'
         },
         {
           title: '操作ip',
@@ -126,7 +135,7 @@ export default {
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: {customRender: 'status'}
+          scopedSlots: { customRender: 'status' }
         },
         {
           title: '接口耗时',
@@ -136,35 +145,35 @@ export default {
         {
           title: '操作日期',
           dataIndex: 'operTime'
-        },
+        }
 
       ],
       ids: [],
-      selectedRows: [],
+      selectedRows: []
     }
   },
-  created() {
+  created () {
 
   },
   methods: {
     moment,
-    refresh() {
+    refresh () {
       this.$refs.table.refresh(true)
     },
-    reset() {
+    reset () {
       this.queryParam = {}
     },
 
-    removeAll() {
+    removeAll () {
       this.$message.success('清空完成', 3)
     },
-    handleDelete(record) {
+    handleDelete (record) {
       const roleIds = record.id || this.ids
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + roleIds + '的数据',
-        onOk() {
+        onOk () {
           return remove(roleIds)
             .then(resp => {
               if (resp.code === 200) {
@@ -173,24 +182,22 @@ export default {
               } else {
                 _this.$message.error(resp.msg)
               }
-
             })
         },
-        onCancel() {
+        onCancel () {
         }
       })
     },
-    getLoginLogs(parameter) {
-
+    getLoginLogs (parameter) {
       if (!parameter) {
-        let page = this.$refs.table.localPagination
+        const page = this.$refs.table.localPagination
         parameter = {
           current: page.current,
           size: page.pageSize
         }
       }
 
-      const param = this.queryParam;
+      const param = this.queryParam
       if (param.loginTime && param.loginTime.length > 0) {
         param.startDate = moment(param.loginTime[0]).format('YYYY-MM-DD')
         param.endDate = moment(param.loginTime[1]).format('YYYY-MM-DD')
@@ -199,13 +206,12 @@ export default {
         return resp.data
       })
     },
-    onSelectChange(ids, selectedRows) {
+    onSelectChange (ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
     }
   }
 }
-
 
 </script>
 

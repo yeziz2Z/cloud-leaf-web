@@ -19,18 +19,19 @@
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
-                  <span class="table-page-search-submitButtons"
-                        :style=" { float: 'right', overflow: 'hidden' }  ">
-                    <a-button type="primary" icon="search" @click="loadMenus">查询</a-button>
-                    <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
-                  </span>
+              <span
+                class="table-page-search-submitButtons"
+                :style=" { float: 'right', overflow: 'hidden' } ">
+                <a-button type="primary" icon="search" @click="loadMenus">查询</a-button>
+                <a-button style="margin-left: 8px" icon="reload" @click="() => this.queryParam = {}">重置</a-button>
+              </span>
             </a-col>
           </a-row>
         </a-form>
       </div>
 
       <div class="table-operator">
-        <a-button type="primary" icon="plus"  v-permission="'system.menu.add'" @click="handleAdd">新建</a-button>
+        <a-button type="primary" icon="plus" v-permission="'system.menu.add'" @click="handleAdd">新建</a-button>
         <!--        <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete">删除</a-button>-->
       </div>
       <s-table
@@ -43,31 +44,31 @@
 
       >
 
-            <span slot="icon" slot-scope="text,record">
-              <a-icon v-if="text" :type="text"></a-icon>
-            </span>
-        <span slot="status" slot-scope="text, record">
+        <template #icon="text,record">
+          <a-icon v-if="text" :type="text"></a-icon>
+        </template>
+        <template #status="text, record">
           <a-tag :color="text?'green':'red'">{{ text ? '正常' : '停用' }}</a-tag>
-        </span>
-        <span slot="action" slot-scope="text, record">
-            <template>
-              <span v-permission="'system.menu.edit'">
-                <a @click="handleEdit(record)">
-                  <a-icon type="edit"/>编辑
-                </a>
-                <a-divider type="vertical"/>
-              </span>
-              <span v-permission="'system.menu.add'">
-                <a @click="handleAdd(record)">
-                  <a-icon type="plus"/>新增
-                </a>
-                <a-divider type="vertical"/>
-              </span>
-              <a v-permission="'system.menu.delete'" @click="handleDelete(record)">
-                <a-icon type="delete"/>删除
+        </template>
+        <template #action="text, record">
+          <template>
+            <span v-permission="'system.menu.edit'">
+              <a @click="handleEdit(record)">
+                <a-icon type="edit"/>编辑
               </a>
-            </template>
-          </span>
+              <a-divider type="vertical"/>
+            </span>
+            <span v-permission="'system.menu.add'">
+              <a @click="handleAdd(record)">
+                <a-icon type="plus"/>新增
+              </a>
+              <a-divider type="vertical"/>
+            </span>
+            <a v-permission="'system.menu.delete'" @click="handleDelete(record)">
+              <a-icon type="delete"/>删除
+            </a>
+          </template>
+        </template>
       </s-table>
     </a-card>
 
@@ -77,8 +78,8 @@
 
 <script>
 import MenuModal from './modules/MenuModal'
-import {getMenuTree, remove} from '@/api/system/menu'
-import {Tree, Table} from 'ant-design-vue'
+import { getMenuTree, remove } from '@/api/system/menu'
+import { Tree, Table } from 'ant-design-vue'
 
 export default {
   name: 'Menu',
@@ -88,7 +89,7 @@ export default {
     MenuModal,
     ATree: Tree
   },
-  data() {
+  data () {
     return {
       // 查询参数
       queryParam: {},
@@ -101,70 +102,69 @@ export default {
         {
           title: '图标',
           dataIndex: 'icon',
-          scopedSlots: {customRender: 'icon'}
+          scopedSlots: { customRender: 'icon' }
         },
         {
           title: '排序',
-          dataIndex: 'orderNo',
+          dataIndex: 'orderNo'
         },
         {
           title: '权限标识',
-          dataIndex: 'permission',
+          dataIndex: 'permission'
         },
         {
           title: '组件',
-          dataIndex: 'component',
+          dataIndex: 'component'
         },
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: {customRender: 'status'}
+          scopedSlots: { customRender: 'status' }
         },
         {
           title: '创建时间',
-          dataIndex: 'createTime',
+          dataIndex: 'createTime'
         },
         {
           title: '操作',
           dataIndex: 'action',
           width: '200px',
-          scopedSlots: {customRender: 'action'}
+          scopedSlots: { customRender: 'action' }
         }
       ],
       menus: [],
-      menuTree: [{label: '菜单', id: 0}],
+      menuTree: [{ label: '菜单', id: 0 }],
       ids: [],
       selectedRows: [],
       colors: ['pink', 'red', 'orange', 'green', 'cyan', 'blue', 'purple']
     }
   },
-  created() {
+  created () {
     this.loadMenus()
-
   },
   methods: {
-    loadMenus() {
+    loadMenus () {
       getMenuTree(this.queryParam).then(resp => {
         this.menus = resp.data
         this.menuTree[0].children = this.menus
       })
     },
-    handleAdd(item) {
+    handleAdd (item) {
       this.$refs.modal.add(item.id)
     },
-    handleEdit(record) {
+    handleEdit (record) {
       this.$refs.modal.edit(record.id || this.ids[0])
     },
-    handleView(record) {
+    handleView (record) {
       this.$refs.modal.view(record.id || this.ids[0])
     },
-    handleDelete(record) {
+    handleDelete (record) {
       const id = record.id
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + record.id + '的数据',
-        onOk() {
+        onOk () {
           return remove(id)
             .then(resp => {
               if (resp.code === 200) {
@@ -175,18 +175,18 @@ export default {
               }
             })
         },
-        onCancel() {
+        onCancel () {
         }
       })
     },
 
-    handleSaveOk() {
+    handleSaveOk () {
       this.ids = []
       this.loadMenus()
     },
-    handleSaveClose(e) {
+    handleSaveClose (e) {
     },
-    onSelectChange(ids, selectedRows) {
+    onSelectChange (ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
       console.log(this.ids)

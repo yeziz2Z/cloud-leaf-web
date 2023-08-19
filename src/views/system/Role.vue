@@ -28,7 +28,11 @@
       <a-button type="primary" icon="plus" v-permission="'system.role.add'" @click="handleAdd">新建</a-button>
       <a-button icon="edit" :disabled="ids.length !== 1" @click="handleEdit" v-permission="'system.role.edit'">修改
       </a-button>
-      <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDelete"
+      <a-button
+type="danger"
+:disabled="ids.length === 0"
+icon="delete"
+@click="handleDelete"
                 v-permission="'system.role.delete'">删除
       </a-button>
 
@@ -36,38 +40,38 @@
     <s-table
       ref="table"
       size="default"
-      :rowKey='record => record.id'
+      :rowKey="record => record.id"
       :pagination="{ showTotal: total => `共 ${total} 条` }"
       :columns="columns"
       :data="getRoleList"
       :rowSelection="{ selectedRowKeys: ids, onChange: onSelectChange }"
     >
 
-      <span slot="status" slot-scope="text, record">
-          <a-tag :color="text == '1' ? 'green':'red'">{{ text == '1' ? '正常' : '停用' }}</a-tag>
-        </span>
-      <span slot="action" slot-scope="text, record">
+      <template #status="text">
+          <a-tag :color="text === '1' ? 'green':'red'">{{ text === '1' ? '正常' : '停用' }}</a-tag>
+        </template>
+      <template #action="text, raw">
             <template>
               <span v-permission="'system.role.edit'">
-                 <a @click="handleEdit(record)">
+                 <a @click="handleEdit(raw)">
                 <a-icon type="edit"/>编辑
               </a>
               <a-divider type="vertical"/>
               </span>
               <span v-permission="'system.role.delete'">
-                <a @click="handleDelete(record)">
+                <a @click="handleDelete(raw)">
                 <a-icon type="delete"/>删除
               </a>
               <a-divider type="vertical"/>
               </span>
               <span v-permission="'system.role.permission'">
-                <a @click="showPermModal(record.id,record.name)">
+                <a @click="showPermModal(raw.id,raw.name)">
                 <a-icon type="user-add"/>角色权限
               </a>
               </span>
 
             </template>
-        </span>
+        </template>
     </s-table>
     <role-modal ref="modal" @ok="handleSaveOk" @close="handleSaveClose"/>
     <role-permission-modal ref="rolePermissionModal" :menuTree="menuTree"/>
@@ -75,22 +79,22 @@
 </template>
 
 <script>
-import {STable} from '@/components'
+import { STable } from '@/components'
 import RoleModal from './modules/RoleModal'
 import RolePermissionModal from './modules/RolePermissionModal'
-import {remove, getRoleList} from "@/api/system/role";
-import {getMenuTree} from "@/api/system/menu";
+import { remove, getRoleList } from '@/api/system/role'
+import { getMenuTree } from '@/api/system/menu'
 
 export default {
-  name: "Role",
+  name: 'Role',
   components: {
     STable,
     RoleModal,
     RolePermissionModal
   },
-  data() {
+  data () {
     return {
-      //查询参数
+      // 查询参数
       queryParam: {},
       columns: [
         {
@@ -108,7 +112,7 @@ export default {
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: {customRender: 'status'}
+          scopedSlots: { customRender: 'status' }
         },
         {
           title: '创建时间',
@@ -119,7 +123,7 @@ export default {
           dataIndex: 'action',
           width: '240px',
           align: 'center',
-          scopedSlots: {customRender: 'action'}
+          scopedSlots: { customRender: 'action' }
         }
       ],
       ids: [],
@@ -127,31 +131,31 @@ export default {
       menuTree: []
     }
   },
-  created() {
+  created () {
     getMenuTree().then(resp => {
       this.menuTree = resp.data
     })
   },
   methods: {
-    refresh() {
+    refresh () {
       this.$refs.table.refresh(true)
     },
-    reset() {
+    reset () {
       this.queryParam = {}
     },
-    showPermModal(id, name) {
-      this.$refs.rolePermissionModal.show(id, name);
+    showPermModal (id, name) {
+      this.$refs.rolePermissionModal.show(id, name)
     },
-    handleAdd() {
+    handleAdd () {
       this.$refs.modal.add()
     },
-    handleDelete(record) {
+    handleDelete (record) {
       const roleIds = record.id || this.ids
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + roleIds + '的数据',
-        onOk() {
+        onOk () {
           return remove(roleIds)
             .then(resp => {
               if (resp.code === 200) {
@@ -160,26 +164,25 @@ export default {
               } else {
                 _this.$message.error(resp.msg)
               }
-
             })
         },
-        onCancel() {
+        onCancel () {
         }
       })
     },
-    handleEdit(record) {
+    handleEdit (record) {
       this.$refs.modal.edit(record.id || this.ids[0])
     },
-    handleSaveOk() {
+    handleSaveOk () {
       this.ids = []
       this.refresh()
     },
-    handleSaveClose() {
+    handleSaveClose () {
 
     },
-    getRoleList(parameter) {
+    getRoleList (parameter) {
       if (!parameter) {
-        let page = this.$refs.table.localPagination
+        const page = this.$refs.table.localPagination
         parameter = {
           current: page.current,
           size: page.pageSize
@@ -189,13 +192,12 @@ export default {
         return resp.data
       })
     },
-    onSelectChange(ids, selectedRows) {
+    onSelectChange (ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
     }
   }
 }
-
 
 </script>
 

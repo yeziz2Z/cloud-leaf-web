@@ -200,10 +200,10 @@ export const asyncRouterMap = [
             meta: { title: 'menu.exception.server-error', permission: ['exception'] }
           }
         ]
-      },
+      }
 
       // account
-      /*{
+      /* {
         path: '/account',
         component: RouteView,
         redirect: '/account/center',
@@ -267,11 +267,11 @@ export const asyncRouterMap = [
             ]
           }
         ]
-      },*/
+      }, */
 
       // other
 
-      /*{
+      /* {
         path: '/other',
         name: 'otherPage',
         // component: PageView,
@@ -330,7 +330,7 @@ export const asyncRouterMap = [
             ]
           }
         ]
-      }*/
+      } */
 
     ]
   },
@@ -407,7 +407,7 @@ export const constantRouterMap = [
                 path: '/account/settings/basic',
                 name: 'BasicSettings',
                 component: () => import('@/views/account/settings/BasicSetting'),
-                meta: { title: '基本设置', hidden: true,keepAlive: false}
+                meta: { title: '基本设置', hidden: true, keepAlive: false }
               },
               {
                 path: '/account/settings/security',
@@ -423,7 +423,7 @@ export const constantRouterMap = [
                 path: '/account/settings/custom',
                 name: 'CustomSettings',
                 component: () => import('@/views/account/settings/Custom'),
-                meta: { title: '个性化', hidden: true, keepAlive: true}
+                meta: { title: '个性化', hidden: true, keepAlive: true }
               },
               {
                 path: '/account/settings/binding',
@@ -438,13 +438,13 @@ export const constantRouterMap = [
                 meta: {
                   title: '新消息通知',
                   hidden: true,
-                  keepAlive: true,
+                  keepAlive: true
                 }
               }
             ]
           }
         ]
-      },
+      }
     ]
   },
   {

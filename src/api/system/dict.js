@@ -8,7 +8,7 @@ const api = {
   options: '/cloud-leaf-admin/dict/data/options'
 }
 
-export function page(parameter) {
+export function page (parameter) {
   return request({
     url: api.typePage,
     method: 'get',
@@ -16,7 +16,7 @@ export function page(parameter) {
   })
 }
 
-export function addDictType(data) {
+export function addDictType (data) {
   return request({
     url: api.type,
     method: 'post',
@@ -24,7 +24,7 @@ export function addDictType(data) {
   })
 }
 
-export function editDictType(data) {
+export function editDictType (data) {
   return request({
     url: api.type,
     method: 'put',
@@ -32,28 +32,28 @@ export function editDictType(data) {
   })
 }
 
-export function removeDictType(ids) {
+export function removeDictType (ids) {
   return request({
     url: api.type + '/' + ids,
     method: 'delete'
   })
 }
 
-export function getDictTypeById(id) {
+export function getDictTypeById (id) {
   return request({
     url: api.type + '/' + id,
     method: 'get'
   })
 }
 
-export function getDictDataById(id) {
+export function getDictDataById (id) {
   return request({
     url: api.data + '/' + id,
     method: 'get'
   })
 }
 
-export function addDictData(data) {
+export function addDictData (data) {
   return request({
     url: api.data,
     method: 'post',
@@ -61,7 +61,7 @@ export function addDictData(data) {
   })
 }
 
-export function editDictData(data) {
+export function editDictData (data) {
   return request({
     url: api.data,
     method: 'put',
@@ -69,25 +69,23 @@ export function editDictData(data) {
   })
 }
 
-export function removeDictData(ids) {
+export function removeDictData (ids) {
   return request({
     url: api.data + '/' + ids,
     method: 'delete'
   })
 }
 
-export function dictDataList(id) {
+export function dictDataList (id) {
   return request({
     url: api.dataList + '/' + id,
     method: 'get'
   })
 }
 
-export function dictDataOptions(type) {
+export function dictDataOptions (type) {
   return request({
     url: api.options + '/' + type,
     method: 'get'
   })
 }
-
-

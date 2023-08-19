@@ -1,4 +1,4 @@
-import { JSEncrypt } from "jsencrypt"
+import { JSEncrypt } from 'jsencrypt'
 
 const publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApUIHNGuvLI7y70lBkm+kY0eAVjN764Oxjv9gGjDHqlVG+srYHn4kc0RjHLWY8QSmwe1OiPc/yFEeu76IrCeMV2qw+zIakm7TVnWKNmykQtjVG/PcwDGpN4iDDwfBWaqTec3YsGmM8Vg1Ayd1zkJCoYN43y8uYKDylnNzUwJlUmm9Z+sKNiwP2TRYTSzkmWyPkw5fXc7V4R7PAWCND/SEspTmok5kFLqrCgIRvuR/BzCHxfVJc6izQNQ7h5XRY1ctQ0TIoCgBVm+avbjZVD59gVSrkPoxv9y0XD1ZvBEVfXwOGwG8jK7qgSg/oG/avr4VCmTB/oFJ2yq0bWPOgxlCtwIDAQAB'
 
@@ -6,17 +6,17 @@ const publicKey = 'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApUIHNGuvLI7y70lBk
 const encryptor = new JSEncrypt()
 encryptor.setPublicKey(publicKey)
 
-export function encrypt(text) {
+export function encrypt (text) {
   return encryptor.encrypt(text)
 }
 
-export function timeFix() {
+export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
   return hour < 9 ? '早上好' : hour <= 11 ? '上午好' : hour <= 13 ? '中午好' : hour < 20 ? '下午好' : '晚上好'
 }
 
-export function welcome() {
+export function welcome () {
   const arr = ['休息一会儿吧', '准备吃什么呢?', '要不要打一把 LOL!', '我猜你可能累了']
   const index = Math.floor(Math.random() * arr.length)
   return arr[index]
@@ -25,14 +25,14 @@ export function welcome() {
 /**
  * 触发 window.resize
  */
-export function triggerWindowResizeEvent() {
+export function triggerWindowResizeEvent () {
   const event = document.createEvent('HTMLEvents')
   event.initEvent('resize', true, true)
   event.eventType = 'message'
   window.dispatchEvent(event)
 }
 
-export function handleScrollHeader(callback) {
+export function handleScrollHeader (callback) {
   let timer = 0
 
   let beforeScrollTop = window.pageYOffset
@@ -58,7 +58,7 @@ export function handleScrollHeader(callback) {
   )
 }
 
-export function isIE() {
+export function isIE () {
   const bw = window.navigator.userAgent
   const compare = (s) => bw.indexOf(s) >= 0
   const ie11 = (() => 'ActiveXObject' in window)()
@@ -70,7 +70,7 @@ export function isIE() {
  * @param id parent element id or class
  * @param timeout
  */
-export function removeLoadingAnimate(id = '', timeout = 1500) {
+export function removeLoadingAnimate (id = '', timeout = 1500) {
   if (id === '') {
     return
   }
@@ -79,7 +79,7 @@ export function removeLoadingAnimate(id = '', timeout = 1500) {
   }, timeout)
 }
 
-export function scorePassword(pass) {
+export function scorePassword (pass) {
   let score = 0
   if (!pass) {
     return score
@@ -107,4 +107,3 @@ export function scorePassword(pass) {
 
   return parseInt(score)
 }
-

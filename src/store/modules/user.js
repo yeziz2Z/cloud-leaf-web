@@ -1,7 +1,7 @@
 import storage from 'store'
-import {getInfo, login, logout, refreshToken} from '@/api/login'
-import {ACCESS_TOKEN, REFRESH_TOKEN} from '@/store/mutation-types'
-import {welcome} from '@/utils/util'
+import { getInfo, login, logout, refreshToken } from '@/api/login'
+import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/store/mutation-types'
+import { welcome } from '@/utils/util'
 
 const user = {
   state: {
@@ -18,7 +18,7 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_NAME: (state, {name, welcome}) => {
+    SET_NAME: (state, { name, welcome }) => {
       state.name = name
       state.welcome = welcome
     },
@@ -38,7 +38,7 @@ const user = {
 
   actions: {
     // 登录
-    Login({commit}, userInfo) {
+    Login ({ commit }, userInfo) {
       return new Promise((resolve, reject) => {
         login(userInfo).then(response => {
           if (response.code === 200) {
@@ -50,7 +50,6 @@ const user = {
           } else {
             reject(response)
           }
-
         }).catch(error => {
           reject(error)
         })
@@ -58,7 +57,7 @@ const user = {
     },
 
     // 获取用户信息
-    GetInfo({commit}) {
+    GetInfo ({ commit }) {
       return new Promise((resolve, reject) => {
         getInfo().then(response => {
           const result = response.data
@@ -71,7 +70,7 @@ const user = {
             reject(new Error('getInfo: roles must be a non-null array !'))
           }
 
-          commit('SET_NAME', {name: result.name, welcome: welcome()})
+          commit('SET_NAME', { name: result.name, welcome: welcome() })
           commit('SET_AVATAR', result.avatar)
 
           resolve(response)
@@ -83,7 +82,7 @@ const user = {
     },
 
     // 登出
-    Logout({commit, state}) {
+    Logout ({ commit, state }) {
       return new Promise((resolve) => {
         logout(state.token).then(() => {
           commit('SET_TOKEN', '')
@@ -98,7 +97,7 @@ const user = {
         })
       })
     },
-    ResetToken({commit}) {
+    ResetToken ({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         commit('SET_ROLES', [])
@@ -108,7 +107,7 @@ const user = {
       })
     },
     // 刷新TOKEN
-    RefreshToken({commit}) {
+    RefreshToken ({ commit }) {
       commit('SET_TOKEN', undefined)
       storage.remove(ACCESS_TOKEN)
       return new Promise((resolve, reject) => {
@@ -130,7 +129,7 @@ const user = {
           reject(err)
         })
       })
-    },
+    }
 
   }
 }

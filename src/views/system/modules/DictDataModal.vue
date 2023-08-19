@@ -14,29 +14,31 @@
         <a-form-item label="数据标签">
           <a-input
             v-decorator="['label',
-                {rules:[{required:true,message:'请输入字典数据标签',whitespace:true}],
-                getValueFromEvent: e =>{ return e.target.value.trim()},
-                trigger:'blur',
-                validateTrigger:'blur'
-                }]"/>
+                          {rules:[{required:true,message:'请输入字典数据标签',whitespace:true}],
+                           getValueFromEvent: e =>{ return e.target.value.trim()},
+                           trigger:'blur',
+                           validateTrigger:'blur'
+                          }]"/>
         </a-form-item>
         <a-form-item label="数据值">
-          <a-input v-decorator="['value',
-               {rules:
-                 [
-                   {required:true,message:'请录入字典数据值'},
-                 ],
-                trigger:'change',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-               }
-               ]"/>
+          <a-input
+            v-decorator="['value',
+                          {rules:
+                             [
+                               {required:true,message:'请录入字典数据值'},
+                             ],
+                           trigger:'change',
+                           validateTrigger:'blur',
+                           getValueFromEvent: e =>{ return e.target.value.trim()}
+                          }
+            ]"/>
         </a-form-item>
         <a-form-item label="显示排序">
-          <a-input-number v-decorator="['sort',
-              {
-                rules:[{required:true,message:'请输入显示排序'} ],
-              }]"/>
+          <a-input-number
+            v-decorator="['sort',
+                          {
+                            rules:[{required:true,message:'请输入显示排序'} ],
+                          }]"/>
         </a-form-item>
         <a-form-item label="状 态">
           <a-radio-group v-decorator="['status', {initialValue:'1'}]" :options="statusOptions">
@@ -44,13 +46,14 @@
         </a-form-item>
 
         <a-form-item label="备 注">
-          <a-textarea v-decorator="['remark',
-              {
-                rules:[{max:100,message:'长度限制100'}],
-                trigger:'blur',
-                validateTrigger:'blur',
-                getValueFromEvent: e =>{ return e.target.value.trim()}
-              }]"/>
+          <a-textarea
+            v-decorator="['remark',
+                          {
+                            rules:[{max:100,message:'长度限制100'}],
+                            trigger:'blur',
+                            validateTrigger:'blur',
+                            getValueFromEvent: e =>{ return e.target.value.trim()}
+                          }]"/>
         </a-form-item>
       </a-form>
 
@@ -68,7 +71,7 @@ import { addDictData, editDictData, getDictDataById, dictDataOptions } from '@/a
 
 export default {
   name: 'DictDataModal',
-  data() {
+  data () {
     return {
       modalProp: {
         title: '',
@@ -76,32 +79,32 @@ export default {
         footVisible: true
       },
       formItemLayout: {
-        labelCol: {span: 6},
-        wrapperCol: {span: 12},
+        labelCol: { span: 6 },
+        wrapperCol: { span: 12 }
       },
       visible: false,
       confirmLoading: false,
       mdl: {},
       id: null,
       form: this.$form.createForm(this),
-      statusOptions: [],
+      statusOptions: []
     }
   },
   beforeCreate () {
-    dictDataOptions('sys_status').then(res =>{
+    dictDataOptions('sys_status').then(res => {
       this.statusOptions = res.data
     })
   },
-  created() {
+  created () {
   },
   methods: {
-    add(type) {
+    add (type) {
       this.visible = true
       this.$nextTick(() => {
         this.form.setFieldsValue({ type: type })
       })
     },
-    edit(id) {
+    edit (id) {
       this.id = id
       this.visible = true
       getDictDataById(id).then(resp => {
@@ -109,15 +112,14 @@ export default {
           this.form.setFieldsValue(pick(resp.data, 'type', 'label', 'value', 'sort', 'status', 'remark'))
         })
       })
-
     },
-    close() {
+    close () {
       this.$emit('close')
       this.visible = false
       this.id = null
       this.form.resetFields()
     },
-    handleOk() {
+    handleOk () {
       const _this = this
       // 触发表单验证
       this.form.validateFields((err, values) => {
@@ -148,7 +150,6 @@ export default {
               } else {
                 _this.$message.error(resp.msg, 3)
               }
-
             }).catch(err => {
               _this.$message.error(resp.msg, 3)
             }).finally(() => {
@@ -157,7 +158,7 @@ export default {
           }
         }
       })
-    },
+    }
 
   }
 }

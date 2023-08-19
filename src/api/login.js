@@ -26,15 +26,15 @@ const userApi = {
  * @param parameter
  * @returns {*}
  */
-/*export function login(parameter) {
+/* export function login(parameter) {
   return request({
     url: userApi.Login,
     method: 'post',
     data: parameter
   })
-}*/
+} */
 
-export function login(parameter) {
+export function login (parameter) {
   return request({
     url: userApi.Login,
     method: 'post',
@@ -45,14 +45,14 @@ export function login(parameter) {
   })
 }
 
-export function captcha() {
+export function captcha () {
   return request({
     url: userApi.Captcha,
     method: 'get'
   })
 }
 
-export function getSmsCaptcha(parameter) {
+export function getSmsCaptcha (parameter) {
   return request({
     url: userApi.SendSms,
     method: 'post',
@@ -60,7 +60,7 @@ export function getSmsCaptcha(parameter) {
   })
 }
 
-export function getInfo() {
+export function getInfo () {
   return request({
     url: userApi.UserInfo,
     method: 'get',
@@ -70,7 +70,7 @@ export function getInfo() {
   })
 }
 
-export function refreshToken(refreshToken) {
+export function refreshToken (refreshToken) {
   return request({
     url: userApi.RefreshToken,
     method: 'get',
@@ -78,14 +78,14 @@ export function refreshToken(refreshToken) {
   })
 }
 
-export function getCurrentUserNav() {
+export function getCurrentUserNav () {
   return request({
     url: userApi.UserMenu,
     method: 'get'
   })
 }
 
-export function logout() {
+export function logout () {
   return request({
     url: userApi.Logout,
     method: 'post',
@@ -95,12 +95,11 @@ export function logout() {
   })
 }
 
-
 /**
  * get user 2step code open?
  * @param parameter {*}
  */
-export function get2step(parameter) {
+export function get2step (parameter) {
   return request({
     url: userApi.twoStepCode,
     method: 'post',

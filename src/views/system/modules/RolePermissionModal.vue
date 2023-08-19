@@ -20,16 +20,16 @@
 </template>
 
 <script>
-import {Tree} from 'ant-design-vue'
-import {selectMenusByRoleId, saveRoleMenus} from "@/api/system/role";
+import { Tree } from 'ant-design-vue'
+import { selectMenusByRoleId, saveRoleMenus } from '@/api/system/role'
 
 export default {
-  name: "RolePermissionModal",
+  name: 'RolePermissionModal',
   props: ['menuTree'],
   components: {
     ATree: Tree
   },
-  data() {
+  data () {
     return {
       visible: false,
       confirmLoading: false,
@@ -41,36 +41,36 @@ export default {
       title: '',
       roleId: null,
       menuCheckedKeys: [],
-      menuHalfCheckedKeys: [],
+      menuHalfCheckedKeys: []
     }
   },
-  beforeCreate() {
+  beforeCreate () {
 
   },
-  created() {
+  created () {
 
   },
   methods: {
-    close() {
+    close () {
       this.visible = false
     },
-    check(checkedKeys, e) {
+    check (checkedKeys, e) {
       this.menuHalfCheckedKeys = e.halfCheckedKeys
       console.log(this.menuCheckedKeys, this.menuHalfCheckedKeys)
-      console.log(this.menuTree);
+      console.log(this.menuTree)
     },
-    show(id, name) {
+    show (id, name) {
       this.title = name
       this.roleId = id
-      //TODO 固定模态框 添加滚动条
+      // TODO 固定模态框 添加滚动条
       selectMenusByRoleId(id).then(resp => {
         this.menuCheckedKeys = resp.data
         this.echoHalfCheckedKeys(this.menuTree)
         this.visible = true
       })
     },
-    submit() {
-      saveRoleMenus({roleId: this.roleId, menuIds: this.menuCheckedKeys.concat(this.menuHalfCheckedKeys)})
+    submit () {
+      saveRoleMenus({ roleId: this.roleId, menuIds: this.menuCheckedKeys.concat(this.menuHalfCheckedKeys) })
         .then(resp => {
           if (resp.code === 200) {
             this.$message.success('赋权成功', 3)
@@ -79,17 +79,16 @@ export default {
             this.$message.error(resp.msg, 3)
           }
         })
-
     },
     // 半选回显
-    echoHalfCheckedKeys(nodes) {
+    echoHalfCheckedKeys (nodes) {
       if (!nodes || nodes.length === 0) {
         return
       }
       nodes.forEach(node => {
         if (node.children) {
-          const isExist = this.menuCheckedKeys.indexOf(node.id);
-          if (isExist !== -1){
+          const isExist = this.menuCheckedKeys.indexOf(node.id)
+          if (isExist !== -1) {
             this.menuCheckedKeys.splice(isExist, 1)
           }
           this.echoHalfCheckedKeys(node.children)

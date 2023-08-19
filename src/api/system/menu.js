@@ -3,43 +3,43 @@ import request from '@/utils/request'
 const api = {
   menu: '/cloud-leaf-admin/menu',
   menuTree: '/cloud-leaf-admin/menu/tree',
-  menuPage: '/cloud-leaf-admin/role/page',
+  menuPage: '/cloud-leaf-admin/role/page'
 }
 
-export function getMenuTree(parameter){
+export function getMenuTree (parameter) {
   return request({
     url: api.menuTree,
-    method:'get',
+    method: 'get',
     params: parameter
   })
 }
 
-export function getMenuById(id){
+export function getMenuById (id) {
   return request({
-    url: api.menu + '/' +id,
-    method:'get'
+    url: api.menu + '/' + id,
+    method: 'get'
   })
 }
 
-export function remove(id){
+export function remove (id) {
   return request({
-    url: api.menu + '/' +id,
-    method:'delete'
+    url: api.menu + '/' + id,
+    method: 'delete'
   })
 }
 
-export function add(data){
+export function add (data) {
   return request({
     url: api.menu,
-    method:'post',
-    data:data
+    method: 'post',
+    data: data
   })
 }
 
-export function edit(data){
+export function edit (data) {
   return request({
     url: api.menu,
-    method:'put',
-    data:data
+    method: 'put',
+    data: data
   })
 }

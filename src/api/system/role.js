@@ -7,8 +7,7 @@ const api = {
   roleMenus: '/cloud-leaf-admin/role/menus'
 }
 
-
-export function add(data) {
+export function add (data) {
   return request({
     url: api.role,
     method: 'post',
@@ -16,7 +15,7 @@ export function add(data) {
   })
 }
 
-export function edit(data) {
+export function edit (data) {
   return request({
     url: api.role,
     method: 'put',
@@ -24,28 +23,28 @@ export function edit(data) {
   })
 }
 
-export function remove(roleIds) {
+export function remove (roleIds) {
   return request({
     url: api.role + '/' + roleIds,
     method: 'delete'
   })
 }
 
-export function getRoleById(roleId) {
+export function getRoleById (roleId) {
   return request({
     url: api.role + '/' + roleId,
     method: 'get'
   })
 }
 
-export function getRoles() {
+export function getRoles () {
   return request({
     url: api.roles,
     method: 'get'
   })
 }
 
-export function getRoleList(parameter) {
+export function getRoleList (parameter) {
   return request({
     url: api.rolePage,
     method: 'get',
@@ -53,14 +52,14 @@ export function getRoleList(parameter) {
   })
 }
 
-export function selectMenusByRoleId(roleId) {
+export function selectMenusByRoleId (roleId) {
   return request({
     url: api.roleMenus + '/' + roleId,
     method: 'get'
   })
 }
 
-export function saveRoleMenus(data) {
+export function saveRoleMenus (data) {
   return request({
     url: api.roleMenus,
     method: 'post',

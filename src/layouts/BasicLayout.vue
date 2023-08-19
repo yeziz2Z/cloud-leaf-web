@@ -22,7 +22,7 @@
     <!-- 1.0.0+ 版本 pro-layout 提供 API,
           增加 Header 左侧内容区自定义
     -->
-<!--    <template v-slot:headerContentRender>
+    <!--    <template v-slot:headerContentRender>
       <div>
         <a-tooltip title="刷新页面">
           <a-icon type="reload" style="font-size: 18px;cursor: pointer;" @click="() => { $message.info('只是一个DEMO') }"/>
@@ -48,15 +48,15 @@
 </template>
 
 <script>
-import {SettingDrawer, updateTheme} from '@ant-design-vue/pro-layout'
-import {i18nRender} from '@/locales'
-import {mapState} from 'vuex'
-import {CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE} from '@/store/mutation-types'
+import { SettingDrawer, updateTheme } from '@ant-design-vue/pro-layout'
+import { i18nRender } from '@/locales'
+import { mapState } from 'vuex'
+import { CONTENT_WIDTH_TYPE, SIDEBAR_TYPE, TOGGLE_MOBILE_TYPE } from '@/store/mutation-types'
 
 import defaultSettings from '@/config/defaultSettings'
 import RightContent from '@/components/GlobalHeader/RightContent'
 import GlobalFooter from '@/components/GlobalFooter'
-import MultiTab from "@/components/MultiTab";
+import MultiTab from '@/components/MultiTab'
 import LogoSvg from '../assets/logo.svg?inline'
 
 export default {
@@ -68,7 +68,7 @@ export default {
     LogoSvg,
     MultiTab
   },
-  data() {
+  data () {
     return {
       // preview.pro.antdv.com only use.
       isProPreviewSite: process.env.VUE_APP_PREVIEW === 'true' && process.env.NODE_ENV !== 'development',
@@ -111,7 +111,7 @@ export default {
       multiTab: (state) => state.app.multiTab
     })
   },
-  created() {
+  created () {
     const routes = this.mainMenu.find(item => item.path === '/')
     this.menus = (routes && routes.children) || []
     // 处理侧栏收起状态
@@ -122,7 +122,7 @@ export default {
       this.$store.commit(TOGGLE_MOBILE_TYPE, this.isMobile)
     })
   },
-  mounted() {
+  mounted () {
     const userAgent = navigator.userAgent
     if (userAgent.indexOf('Edge') > -1) {
       this.$nextTick(() => {
@@ -141,7 +141,7 @@ export default {
   },
   methods: {
     i18nRender,
-    handleMediaQuery(val) {
+    handleMediaQuery (val) {
       this.query = val
       if (this.isMobile && !val['screen-xs']) {
         this.isMobile = false
@@ -154,10 +154,10 @@ export default {
         // this.settings.fixSiderbar = false
       }
     },
-    handleCollapse(val) {
+    handleCollapse (val) {
       this.collapsed = val
     },
-    handleSettingChange({type, value}) {
+    handleSettingChange ({ type, value }) {
       console.log('type', type, value)
       type && (this.settings[type] = value)
       switch (type) {

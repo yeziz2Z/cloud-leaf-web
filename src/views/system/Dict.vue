@@ -29,7 +29,11 @@
       <a-button icon="edit" :disabled="ids.length !== 1" @click="handleDictTypeEdit" v-permission="'system.role.edit'">
         修改
       </a-button>
-      <a-button type="danger" :disabled="ids.length === 0" icon="delete" @click="handleDictTypeDelete"
+      <a-button
+type="danger"
+:disabled="ids.length === 0"
+icon="delete"
+@click="handleDictTypeDelete"
                 v-permission="'system.role.delete'">删除
       </a-button>
 
@@ -37,65 +41,67 @@
     <s-table
       ref="table"
       size="default"
-      :rowKey='record => record.id'
+      :rowKey="record => record.id"
       :pagination="{ showTotal: total => `共 ${total} 条` }"
       :columns="columns"
       @expand="getDictDataList"
+      :expandedRowKeys="expandedRowKeys"
       :data="getDictTypes"
       :rowSelection="{ selectedRowKeys: ids, onChange: onSelectChange }"
     >
-        <span slot="status" slot-scope="text, record">
-          <a-tag :color="text=='1'?'green':'red'">{{ text == '1' ? '正常' : '停用' }}</a-tag>
-        </span>
-      <span slot="action" slot-scope="text, record">
+        <template #status="text">
+          <a-tag :color="text==='1'?'green':'red'">{{ text === '1' ? '正常' : '停用' }}</a-tag>
+        </template>
+      <template #action="text, raw">
             <template>
               <span v-permission="'system.role.edit'">
-                 <a @click="handleDictTypeEdit(record)">
+                 <a @click="handleDictTypeEdit(raw)">
                 <a-icon type="edit"/>编辑
               </a>
               <a-divider type="vertical"/>
               </span>
               <span v-permission="'system.role.delete'">
-                <a @click="handleDictTypeDelete(record)">
+                <a @click="handleDictTypeDelete(raw)">
                 <a-icon type="delete"/>删除
               </a>
               <a-divider type="vertical"/>
               </span>
               <span v-permission="'system.role.permission'">
-                <a @click="handleDictDataAdd(record.type)">
+                <a @click="handleDictDataAdd(raw.type)">
                 <a-icon type="plus"/>添加字典枚举
               </a>
               </span>
 
             </template>
-        </span>
-      <a-table slot="expandedRowRender"
-               slot-scope="record"
-               :columns="dictDataColumns"
-               :row-key="'id'"
-               :loading="loading"
-               :data-source="record.childData"
-               :pagination="false"
-      >
-        <span slot="status" slot-scope="text, record">
-          <a-tag :color="text=='1'?'green':'red'">{{ text == '1' ? '正常' : '停用' }}</a-tag>
-        </span>
-        <span slot="action" slot-scope="text, record">
+        </template>
+      <template #expandedRowRender="row">
+        <a-table
+          :columns="dictDataColumns"
+          :row-key="'id'"
+          :loading="loading"
+          :data-source="row.childData"
+          :pagination="false"
+        >
+        <template #status="text">
+          <a-tag :color="text==='1'?'green':'red'">{{ text === '1' ? '正常' : '停用' }}</a-tag>
+        </template>
+          <template #action="text, rowData">
             <template>
               <span v-permission="'system.role.edit'">
-                 <a @click="handleDictDataEdit(record.id)">
+                 <a @click="handleDictDataEdit(rowData.id)">
                 <a-icon type="edit"/>编辑
               </a>
               <a-divider type="vertical"/>
               </span>
               <span v-permission="'system.role.delete'">
-                <a @click="handleDictDataDelete(record)">
+                <a @click="handleDictDataDelete(rowData)">
                 <a-icon type="delete"/>删除
               </a>
               </span>
             </template>
-        </span>
-      </a-table>
+        </template>
+        </a-table>
+      </template>
 
     </s-table>
 
@@ -105,23 +111,23 @@
 </template>
 
 <script>
-import {STable} from '@/components'
-import {Table} from 'ant-design-vue'
+import { STable } from '@/components'
+import { Table } from 'ant-design-vue'
 import DictTypeModal from './modules/DictTypeModal'
 import DictDataModal from './modules/DictDataModal'
-import {page, dictDataList, removeDictType, removeDictData} from "@/api/system/dict";
+import { page, dictDataList, removeDictType, removeDictData } from '@/api/system/dict'
 
 export default {
-  name: "Dict",
+  name: 'Dict',
   components: {
     STable,
     DictTypeModal,
     DictDataModal,
     ATable: Table
   },
-  data() {
+  data () {
     return {
-      //查询参数
+      // 查询参数
       queryParam: {},
       columns: [
         {
@@ -135,7 +141,7 @@ export default {
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: {customRender: 'status'}
+          scopedSlots: { customRender: 'status' }
         },
         {
           title: '创建时间',
@@ -146,7 +152,7 @@ export default {
           dataIndex: 'action',
           width: '280px',
           align: 'center',
-          scopedSlots: {customRender: 'action'}
+          scopedSlots: { customRender: 'action' }
         }
       ],
       dictDataColumns: [
@@ -165,40 +171,41 @@ export default {
         {
           title: '状态',
           dataIndex: 'status',
-          scopedSlots: {customRender: 'status'}
+          scopedSlots: { customRender: 'status' }
         },
         {
           title: '操作',
           dataIndex: 'action',
           width: '280px',
           align: 'center',
-          scopedSlots: {customRender: 'action'}
+          scopedSlots: { customRender: 'action' }
         }
       ],
       loading: false,
       ids: [],
       selectedRows: [],
+      expandedRowKeys: [],
       menuTree: []
     }
   },
-  created() {
+  created () {
 
   },
   methods: {
-    refresh() {
+    refresh () {
       this.$refs.table.refresh(true)
     },
-    reset() {
+    reset () {
       this.queryParam = {}
     },
 
-    handleDictTypeDelete(record) {
+    handleDictTypeDelete (record) {
       const dictTypeIds = record.id || this.ids
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中编号为' + dictTypeIds + '的数据',
-        onOk() {
+        onOk () {
           return removeDictType(dictTypeIds)
             .then(resp => {
               if (resp.code === 200) {
@@ -207,76 +214,86 @@ export default {
               } else {
                 _this.$message.error(resp.msg)
               }
-
             })
         },
-        onCancel() {
+        onCancel () {
         }
       })
     },
-    handleDictTypeAdd() {
+    handleDictTypeAdd () {
       this.$refs.dictTypeModal.add()
     },
-    handleDictTypeEdit(record) {
+    handleDictTypeEdit (record) {
       this.$refs.dictTypeModal.edit(record.id || this.ids[0])
     },
-    handleSaveDictTypeOk() {
+    handleSaveDictTypeOk () {
       this.ids = []
       this.refresh()
     },
-    handleSaveDictTypeClose() {
+    handleSaveDictTypeClose () {
 
     },
-    handleDictDataAdd(type) {
+    handleDictDataAdd (type) {
       this.$refs.dictDataModal.add(type)
     },
-    handleDictDataEdit(id) {
+    handleDictDataEdit (id) {
       this.$refs.dictDataModal.edit(id)
     },
-    handleSaveDictDataOk(type) {
+    handleSaveDictDataOk (type) {
       this.ids = []
-      this.getDictDataList(true,this.getCurrentDictTypeRow(type))
+      this.getDictDataList(true, this.getCurrentDictTypeRow(type))
     },
-    handleDictDataDelete(record) {
+    handleDictDataDelete (record) {
       const _this = this
       this.$confirm({
         title: '确认删除所选中数据?',
         content: '当前选中字典标签为 [' + record.label + '] 的数据',
-        onOk() {
+        onOk () {
           return removeDictData(record.id)
             .then(resp => {
               if (resp.code === 200) {
                 _this.$message.success('删除成功', 3)
-                _this.getDictDataList(true,_this.getCurrentDictTypeRow(record.type))
+                _this.getDictDataList(true, _this.getCurrentDictTypeRow(record.type))
               } else {
                 _this.$message.error(resp.msg)
               }
             })
         },
-        onCancel() {
+        onCancel () {
         }
       })
     },
-    handleSaveDictDataClose() {
+    handleSaveDictDataClose () {
 
     },
-    getCurrentDictTypeRow(type) {
+    closeAllExpandedRows () {
+      // 清空 expandedRowKeys 数组
+      this.expandedRowKeys = []
+    },
+    getCurrentDictTypeRow (type) {
       return this.$refs.table.localDataSource.find(data => type === data.type)
     },
-    getDictTypes(parameter) {
+    getDictTypes (parameter) {
       if (!parameter) {
-        let page = this.$refs.table.localPagination
+        const page = this.$refs.table.localPagination
         parameter = {
           current: page.current,
           size: page.pageSize
         }
       }
       return page(Object.assign(parameter, this.queryParam)).then(resp => {
+        this.closeAllExpandedRows()
         return resp.data
       })
     },
-    getDictDataList(open, record) {
-      if (!open) {
+    getDictDataList (open, record) {
+      if (open) {
+        this.expandedRowKeys.push(record.id)
+      } else {
+        const index = this.expandedRowKeys.indexOf(record.id)
+        if (index !== -1) {
+          this.expandedRowKeys.splice(index, 1)
+        }
         return
       }
       this.loading = true
@@ -289,13 +306,12 @@ export default {
         }
       )
     },
-    onSelectChange(ids, selectedRows) {
+    onSelectChange (ids, selectedRows) {
       this.ids = ids
       this.selectedRows = selectedRows
     }
   }
 }
-
 
 </script>
 

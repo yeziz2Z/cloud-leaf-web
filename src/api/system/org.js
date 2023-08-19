@@ -3,10 +3,10 @@ import request from '@/utils/request'
 const api = {
   tree: '/cloud-leaf-admin/org/tree',
   org: '/cloud-leaf-admin/org',
-  organizationTree: '/cloud-leaf-admin/org/organizationTree',
+  organizationTree: '/cloud-leaf-admin/org/organizationTree'
 }
 
-export function getOrgTree(parameter) {
+export function getOrgTree (parameter) {
   return request({
     url: api.tree,
     method: 'get',
@@ -14,7 +14,7 @@ export function getOrgTree(parameter) {
   })
 }
 
-export function add(data) {
+export function add (data) {
   return request({
     url: api.org,
     method: 'post',
@@ -22,7 +22,7 @@ export function add(data) {
   })
 }
 
-export function edit(data) {
+export function edit (data) {
   return request({
     url: api.org,
     method: 'put',
@@ -30,21 +30,21 @@ export function edit(data) {
   })
 }
 
-export function removeById(id) {
+export function removeById (id) {
   return request({
     url: api.org + '/' + id,
     method: 'delete'
   })
 }
 
-export function getOrganizationById(id) {
+export function getOrganizationById (id) {
   return request({
     url: api.org + '/' + id,
     method: 'get'
   })
 }
 
-export function getOrganizationTree() {
+export function getOrganizationTree () {
   return request({
     url: api.organizationTree,
     method: 'get'

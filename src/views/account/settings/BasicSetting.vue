@@ -7,12 +7,14 @@
           <a-form-item
             :label="$t('account.settings.basic.nickname')"
           >
-            <a-input v-decorator="['nickName',
-                {rules:[{required:true,message:'请输入昵称',whitespace:true}],
-                getValueFromEvent: e => trimInput(e),
-                trigger:'blur',
-                validateTrigger:'blur'
-                }]" :placeholder="$t('account.settings.basic.nickname-message')"/>
+            <a-input
+              v-decorator="['nickName',
+                            {rules:[{required:true,message:'请输入昵称',whitespace:true}],
+                             getValueFromEvent: e => trimInput(e),
+                             trigger:'blur',
+                             validateTrigger:'blur'
+                            }]"
+              :placeholder="$t('account.settings.basic.nickname-message')"/>
           </a-form-item>
           <!--          <a-form-item
                       :label="$t('account.settings.basic.email')"
@@ -23,27 +25,30 @@
           <a-form-item
             :label="$t('account.settings.basic.email')"
           >
-            <a-input v-decorator="['email',
-                {
-                  rules: [{required:true,message:'请输入邮箱'},
-                  {type: 'email', message: '请输入正确邮件格式'}],
-                  getValueFromEvent: e => trimInput(e),
-                  trigger: 'blur',
-                  validateTrigger: 'blur'
-                }
-            ]"
-                     placeholder="example@ant.design"/>
+            <a-input
+              v-decorator="['email',
+                            {
+                              rules: [{required:true,message:'请输入邮箱'},
+                                      {type: 'email', message: '请输入正确邮件格式'}],
+                              getValueFromEvent: e => trimInput(e),
+                              trigger: 'blur',
+                              validateTrigger: 'blur'
+                            }
+              ]"
+              placeholder="example@ant.design"/>
           </a-form-item>
           <a-form-item
             :label="$t('account.settings.basic.profile')"
           >
-            <a-textarea rows="3" v-decorator="['remark',
-                {rules:[{}],
-                getValueFromEvent: e => trimInput(e),
-                trigger:'blur',
-                validateTrigger:'blur'
-                }]"
-                        :placeholder="$t('account.settings.basic.profile-message')"/>
+            <a-textarea
+              rows="3"
+              v-decorator="['remark',
+                            {rules:[{}],
+                             getValueFromEvent: e => trimInput(e),
+                             trigger:'blur',
+                             validateTrigger:'blur'
+                            }]"
+              :placeholder="$t('account.settings.basic.profile-message')"/>
           </a-form-item>
 
           <a-form-item>
@@ -71,17 +76,17 @@
 
 <script>
 import AvatarModal from './AvatarModal'
-import {baseMixin} from '@/store/app-mixin'
-import {mapGetters} from "vuex"
-import {updateUserProfile} from "@/api/system/user"
-import pick from "lodash.pick"
+import { baseMixin } from '@/store/app-mixin'
+import { mapGetters } from 'vuex'
+import { updateUserProfile } from '@/api/system/user'
+import pick from 'lodash.pick'
 
 export default {
   mixins: [baseMixin],
   components: {
     AvatarModal
   },
-  data() {
+  data () {
     return {
       // cropper
       preview: {},
@@ -101,18 +106,18 @@ export default {
         fixedNumber: [1, 1]
       },
       user: {},
-      form: this.$form.createForm(this),
+      form: this.$form.createForm(this)
 
     }
   },
   methods: {
-    setAvatar(url) {
+    setAvatar (url) {
       this.option.img = url
     },
-    trimInput(e) {
+    trimInput (e) {
       return e.target.value.trim()
     },
-    submit() {
+    submit () {
       // 触发表单验证
       this.form.validateFields((err, values) => {
         // 验证表单没错误
@@ -125,8 +130,6 @@ export default {
               this.userInfo.email = values.email
 
               this.$message.success('更新成功')
-
-
             } else {
               this.$message.error(resp.msg)
             }
@@ -136,23 +139,23 @@ export default {
           })
         }
       })
-    },
+    }
   },
   computed: {
-    ...mapGetters(['userInfo','avatar'])
+    ...mapGetters(['userInfo', 'avatar'])
   },
-  created() {
+  created () {
   },
-  mounted() {
+  mounted () {
     this.$nextTick(() => {
       this.form.setFieldsValue(pick(this.userInfo, 'nickName', 'email', 'remark'))
     })
-    /*this.user = {
+    /* this.user = {
       nickName: this.userInfo.nickName,
       mobilePhone: this.userInfo.mobilePhone,
       email: this.userInfo.email,
       remark: this.userInfo.remark,
-    }*/
+    } */
   }
 }
 </script>

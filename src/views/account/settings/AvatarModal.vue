@@ -56,10 +56,10 @@
 </template>
 <script>
 import store from '@/store'
-import {updateAvatar} from "@/api/system/user"
+import { updateAvatar } from '@/api/system/user'
 
 export default {
-  data() {
+  data () {
     return {
       visible: false,
       id: null,
@@ -78,29 +78,29 @@ export default {
     }
   },
   methods: {
-    edit(id) {
+    edit (id) {
       this.visible = true
       this.id = id
       /* 获取原始头像 */
     },
-    close() {
+    close () {
       this.id = null
       this.visible = false
     },
-    cancelHandel() {
+    cancelHandel () {
       this.close()
     },
-    changeScale(num) {
+    changeScale (num) {
       num = num || 1
       this.$refs.cropper.changeScale(num)
     },
-    rotateLeft() {
+    rotateLeft () {
       this.$refs.cropper.rotateLeft()
     },
-    rotateRight() {
+    rotateRight () {
       this.$refs.cropper.rotateRight()
     },
-    beforeUpload(file) {
+    beforeUpload (file) {
       const reader = new FileReader()
       // 把Array Buffer转化为blob 如果是base64不需要
       // 转化为base64
@@ -113,7 +113,7 @@ export default {
 
       return false
     },
-    finish() {
+    finish () {
       const _this = this
       this.$refs.cropper.getCropBlob(data => {
         this.model = true
@@ -128,12 +128,11 @@ export default {
           } else {
             _this.$message.success(response.msg)
           }
-
-        });
-      });
+        })
+      })
     },
     // 上传图片（点击上传按钮）
-    /*finish(type) {
+    /* finish(type) {
       const _this = this
       const formData = new FormData()
       // 输出
@@ -171,8 +170,8 @@ export default {
           this.modelSrc = data
         })
       }
-    },*/
-    okHandel() {
+    }, */
+    okHandel () {
       const vm = this
 
       vm.confirmLoading = true
@@ -183,7 +182,7 @@ export default {
       }, 2000)
     },
 
-    realTime(data) {
+    realTime (data) {
       this.previews = data
     }
   }
