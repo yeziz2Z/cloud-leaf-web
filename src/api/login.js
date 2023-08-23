@@ -3,7 +3,7 @@ import request from '@/utils/request'
 const userApi = {
   Login: '/cloud-leaf-oauth2/oauth2/token',
   Captcha: '/cloud-leaf-admin/auth/captcha',
-  Logout: '/cloud-leaf-oauth2/oauth/logout',
+  Logout: '/cloud-leaf-oauth2/oauth2/revoke',
   ForgePassword: '/auth/forge-password',
   Register: '/auth/register',
   twoStepCode: '/auth/2step-code',
@@ -14,6 +14,7 @@ const userApi = {
   UserMenu: '/cloud-leaf-admin/user/nav',
   RefreshToken: '/auth/refreshToken'
 }
+const auth = 'Basic Y2xvdWQtbGVhZi1hZG1pbjoxMjM0NTY='
 
 /**
  * login func
@@ -40,7 +41,7 @@ export function login (parameter) {
     method: 'post',
     params: parameter,
     headers: {
-      Authorization: 'Basic Y2xvdWQtbGVhZi1hZG1pbjoxMjM0NTY='
+      Authorization: auth
     }
   })
 }
@@ -85,12 +86,13 @@ export function getCurrentUserNav () {
   })
 }
 
-export function logout () {
+export function logout (parameter) {
   return request({
     url: userApi.Logout,
     method: 'post',
+    params: parameter,
     headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
+      Authorization: auth
     }
   })
 }
