@@ -24,7 +24,7 @@
       </a-col>
       <a-col :xs="24" :md="12" :style="{height: '350px'}">
         <div class="avatar-upload-preview">
-          <img :src="previews.url" :style="previews.img"/>
+          <img :src="previews.url" :style="previews.img" alt="/default_avatar_male.png"/>
         </div>
       </a-col>
     </a-row>
@@ -74,7 +74,9 @@ export default {
         autoCropHeight: 200,
         fixedBox: true
       },
-      previews: {}
+      previews: {
+
+      }
     }
   },
   methods: {

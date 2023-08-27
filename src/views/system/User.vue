@@ -213,6 +213,10 @@ export default {
           needTotal: true
         },
         {
+          title: '手机',
+          dataIndex: 'mobilePhone'
+        },
+        {
           title: '角色',
           dataIndex: 'roles',
           scopedSlots: { customRender: 'roles' }
